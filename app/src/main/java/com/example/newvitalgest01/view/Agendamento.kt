@@ -1,18 +1,14 @@
 package com.example.newvitalgest01.view
 
 import android.content.Intent
-import android.graphics.Color
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import android.view.View
-import android.widget.CheckBox
-import android.widget.CompoundButton
-import androidx.annotation.RequiresApi
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.example.newvitalgest01.databinding.ActivityAgendamentoBinding
-import com.google.android.material.snackbar.Snackbar
+import com.example.newvitalgest01.databinding.DialogConfirmacaoAgendamentoBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
@@ -21,15 +17,15 @@ import java.util.Calendar
 class Agendamento : AppCompatActivity() {
 
     private lateinit var binding: ActivityAgendamentoBinding
+
     private val calendar: Calendar = Calendar.getInstance()
-    private var data: String = ""
-    private var hora: String = ""
+    private var dataSelecionada: String = ""
+    private var horaSelecionada: String = ""
     private var hemocentroSelecionado: String? = null
 
     private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
     private val firestore: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
 
-    // Dados dos hemocentros
     private val hemocentros = mapOf(
         "HEMOPE Recife" to mapOf(
             "endereco" to "Rua Joaquim Nabuco, 171 - Graças",
@@ -48,7 +44,6 @@ class Agendamento : AppCompatActivity() {
         )
     )
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAgendamentoBinding.inflate(layoutInflater)
@@ -58,88 +53,116 @@ class Agendamento : AppCompatActivity() {
 
         inicializarDataHora()
         configurarInformacoesHemocentros()
+        configurarDataHoraListeners()
+        configurarSelecaoHemocentros()
+        configurarBotoes()
+    }
 
+    // ---------------- BOTÕES ----------------
+
+    private fun configurarBotoes() {
+        // Confirmar agendamento
+        binding.btAgendar.setOnClickListener {
+            validarEAgendar()
+        }
+
+        // Voltar para serviços (Home) sem agendar
+        binding.btVoltarServicos.setOnClickListener {
+            navegarParaHome()
+        }
+
+        // Verificar elegibilidade
+        binding.btVerificarElegibilidade.setOnClickListener {
+            startActivity(Intent(this, ElegibilidadeActivity::class.java))
+        }
+    }
+
+    private fun validarEAgendar() {
+        binding.btAgendar.isEnabled = true
+
+        when {
+            dataSelecionada.isEmpty() -> {
+                mostrarToast("Selecione uma data!", irParaHome = false)
+                return
+            }
+            horaSelecionada.isEmpty() -> {
+                mostrarToast("Selecione um horário!", irParaHome = false)
+                return
+            }
+            hemocentroSelecionado == null -> {
+                mostrarToast("Selecione um hemocentro!", irParaHome = false)
+                return
+            }
+            !isHorarioFuncionamentoValido(horaSelecionada, hemocentroSelecionado) -> {
+                val horario = getHorarioFuncionamento(hemocentroSelecionado)
+                mostrarToast(
+                    "Hemocentro fechado! Horário de funcionamento: $horario",
+                    irParaHome = false
+                )
+                return
+            }
+            else -> {
+                // Desabilita botão para evitar múltiplos cliques
+                binding.btAgendar.isEnabled = false
+
+                val info = hemocentros[hemocentroSelecionado]
+                val endereco = info?.get("endereco") ?: ""
+                val telefone = info?.get("telefone") ?: ""
+
+                // Mostra tela de confirmação no padrão do app
+                mostrarDialogoConfirmacaoAgendamento(
+                    hemocentroSelecionado!!,
+                    dataSelecionada,
+                    horaSelecionada,
+                    endereco,
+                    telefone
+                )
+
+                // Salva no Firebase em paralelo (não trava a UI)
+                salvarAgendamentoNoFirebase(
+                    hemocentroSelecionado!!,
+                    dataSelecionada,
+                    horaSelecionada
+                )
+            }
+        }
+    }
+
+    // ---------------- DATA / HORA ----------------
+
+    private fun configurarDataHoraListeners() {
         binding.datePicker.init(
             calendar.get(Calendar.YEAR),
             calendar.get(Calendar.MONTH),
             calendar.get(Calendar.DAY_OF_MONTH)
         ) { _, year, monthOfYear, dayOfMonth ->
-            val dia = if (dayOfMonth < 10) "0$dayOfMonth" else dayOfMonth.toString()
-            val mes = if (monthOfYear < 9) "0${monthOfYear + 1}" else (monthOfYear + 1).toString()
-            data = "$dia/$mes/$year"
+            val dia = dayOfMonth.toString().padStart(2, '0')
+            val mes = (monthOfYear + 1).toString().padStart(2, '0')
+            dataSelecionada = "$dia/$mes/$year"
         }
 
         binding.timePicker.setOnTimeChangedListener { _, hourOfDay, minute ->
-            val horaFormatada = if (hourOfDay < 10) "0$hourOfDay" else hourOfDay.toString()
-            val minuto = if (minute < 10) "0$minute" else minute.toString()
-            hora = "$horaFormatada:$minuto"
+            val h = hourOfDay.toString().padStart(2, '0')
+            val m = minute.toString().padStart(2, '0')
+            horaSelecionada = "$h:$m"
         }
+
         binding.timePicker.setIs24HourView(true)
-
-        configurarSelecaoUnicaHemocentros()
-
-        binding.btAgendar.setOnClickListener {
-            when {
-                data.isEmpty() -> {
-                    mostrarMensagem(it, "Selecione uma data!", "#FF5252", false)
-                }
-                hora.isEmpty() -> {
-                    mostrarMensagem(it, "Selecione um horário!", "#FF5252", false)
-                }
-                hemocentroSelecionado == null -> {
-                    mostrarMensagem(it, "Selecione um hemocentro!", "#FF5252", false)
-                }
-                !isHorarioFuncionamentoValido(hora, hemocentroSelecionado) -> {
-                    val horario = getHorarioFuncionamento(hemocentroSelecionado)
-                    mostrarMensagem(
-                        it,
-                        "Hemocentro fechado! Horário de funcionamento: $horario",
-                        "#FF5252",
-                        false
-                    )
-                }
-                else -> {
-                    val infoHemocentro = hemocentros[hemocentroSelecionado]
-                    val endereco = infoHemocentro?.get("endereco") ?: ""
-                    val telefone = infoHemocentro?.get("telefone") ?: ""
-
-                    val mensagemSucesso = """
-                        ✅ Agendamento confirmado!
-
-                        📍 $hemocentroSelecionado
-                        🗓️ Data: $data
-                        ⏰ Hora: $hora
-                        📞 $telefone
-                        🏠 $endereco
-
-                        Seu agendamento foi salvo na sua conta.
-                    """.trimIndent()
-
-                    salvarAgendamentoNoFirebase(
-                        hemocentroSelecionado!!,
-                        data,
-                        hora
-                    ) { sucesso ->
-                        if (sucesso) {
-                            mostrarMensagem(it, mensagemSucesso, "#4CAF50", true)
-                        } else {
-                            mostrarMensagem(
-                                it,
-                                "Erro ao salvar agendamento. Tente novamente.",
-                                "#FF5252",
-                                false
-                            )
-                        }
-                    }
-                }
-            }
-        }
-
-        binding.btVerificarElegibilidade.setOnClickListener {
-            val intent = Intent(this, ElegibilidadeActivity::class.java)
-            startActivity(intent)
-        }
     }
+
+    private fun inicializarDataHora() {
+        val dia = calendar.get(Calendar.DAY_OF_MONTH).toString().padStart(2, '0')
+        val mes = (calendar.get(Calendar.MONTH) + 1).toString().padStart(2, '0')
+        val ano = calendar.get(Calendar.YEAR)
+        dataSelecionada = "$dia/$mes/$ano"
+
+        val horaAtual = calendar.get(Calendar.HOUR_OF_DAY)
+        val minutoAtual = calendar.get(Calendar.MINUTE)
+        horaSelecionada =
+            "${horaAtual.toString().padStart(2, '0')}:${minutoAtual.toString().padStart(2, '0')}"
+    }
+
+    // ---------------- HEMOCENTROS ----------------
 
     private fun configurarInformacoesHemocentros() {
         binding.txtInfoHemope.text =
@@ -152,101 +175,46 @@ class Agendamento : AppCompatActivity() {
             "IMIP\n${hemocentros["IMIP"]?.get("endereco")}\n${hemocentros["IMIP"]?.get("telefone")}"
     }
 
-    private fun configurarSelecaoUnicaHemocentros() {
-        val checkBoxes: List<CheckBox> = listOf(
+    private fun configurarSelecaoHemocentros() {
+        val checkBoxes = listOf(
             binding.hemopeCheckbox,
             binding.hcCheckbox,
             binding.imipCheckbox
         )
 
-        val onCheckedChangeListener = CompoundButton.OnCheckedChangeListener { buttonView, isChecked ->
-            if (isChecked) {
-                checkBoxes.forEach { checkbox ->
-                    if (checkbox != buttonView) {
-                        checkbox.isChecked = false
+        checkBoxes.forEach { cb ->
+            cb.setOnCheckedChangeListener { buttonView, isChecked ->
+                if (isChecked) {
+                    checkBoxes.filter { it != buttonView }.forEach { it.isChecked = false }
+                    hemocentroSelecionado = when (buttonView.id) {
+                        binding.hemopeCheckbox.id -> "HEMOPE Recife"
+                        binding.hcCheckbox.id -> "Hospital das Clínicas"
+                        binding.imipCheckbox.id -> "IMIP"
+                        else -> null
                     }
-                }
-
-                hemocentroSelecionado = when (buttonView.id) {
-                    binding.hemopeCheckbox.id -> "HEMOPE Recife"
-                    binding.hcCheckbox.id -> "Hospital das Clínicas"
-                    binding.imipCheckbox.id -> "IMIP"
-                    else -> null
-                }
-            } else {
-                val hemocentroDoBotao = when (buttonView.id) {
-                    binding.hemopeCheckbox.id -> "HEMOPE Recife"
-                    binding.hcCheckbox.id -> "Hospital das Clínicas"
-                    binding.imipCheckbox.id -> "IMIP"
-                    else -> null
-                }
-                if (hemocentroSelecionado == hemocentroDoBotao) {
+                } else if (hemocentroSelecionado == when (buttonView.id) {
+                        binding.hemopeCheckbox.id -> "HEMOPE Recife"
+                        binding.hcCheckbox.id -> "Hospital das Clínicas"
+                        binding.imipCheckbox.id -> "IMIP"
+                        else -> null
+                    }
+                ) {
                     hemocentroSelecionado = null
                 }
             }
         }
-
-        checkBoxes.forEach { checkbox ->
-            checkbox.setOnCheckedChangeListener(onCheckedChangeListener)
-        }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun inicializarDataHora() {
-        val diaAtual = calendar.get(Calendar.DAY_OF_MONTH)
-        val mesAtual = calendar.get(Calendar.MONTH)
-        val anoAtual = calendar.get(Calendar.YEAR)
-
-        val dia = if (diaAtual < 10) "0$diaAtual" else diaAtual.toString()
-        val mes = if (mesAtual < 9) "0${mesAtual + 1}" else (mesAtual + 1).toString()
-        data = "$dia/$mes/$anoAtual"
-
-        val horaAtual = calendar.get(Calendar.HOUR_OF_DAY)
-        val minutoAtual = calendar.get(Calendar.MINUTE)
-
-        val (horaPadrao, minutoPadrao) = if (horaAtual in 7..18) {
-            Pair(horaAtual, minutoAtual)
-        } else {
-            Pair(9, 0)
-        }
-
-        val horaFormatada = if (horaPadrao < 10) "0$horaPadrao" else horaPadrao.toString()
-        val minuto = if (minutoPadrao < 10) "0$minutoPadrao" else minutoPadrao.toString()
-        hora = "$horaFormatada:$minuto"
-    }
-
-    private fun isHorarioFuncionamentoValido(hora: String, hemocentro: String?): Boolean {
-        if (hora.isEmpty() || hemocentro == null) return false
-
-        return try {
-            val partes = hora.split(":")
-            val horas = partes[0].toInt()
-            val minutos = partes[1].toInt()
-
-            when (hemocentro) {
-                "HEMOPE Recife" -> horas in 7..18 || (horas == 18 && minutos <= 30)
-                "Hospital das Clínicas" -> horas in 7..16
-                "IMIP" -> horas in 7..17
-                else -> false
-            }
-        } catch (e: Exception) {
-            false
-        }
-    }
-
-    private fun getHorarioFuncionamento(hemocentro: String?): String {
-        return hemocentros[hemocentro]?.get("horario") ?: "Horário não disponível"
-    }
+    // ---------------- FIREBASE ----------------
 
     private fun salvarAgendamentoNoFirebase(
         hemocentro: String,
         data: String,
-        hora: String,
-        callback: (Boolean) -> Unit
+        hora: String
     ) {
         val user = auth.currentUser
         if (user == null) {
-            callback(false)
+            mostrarToast("Usuário não autenticado. Faça login novamente.", irParaHome = false)
             return
         }
 
@@ -254,7 +222,8 @@ class Agendamento : AppCompatActivity() {
             "hemocentro" to hemocentro,
             "data" to data,
             "hora" to hora,
-            "criadoEm" to FieldValue.serverTimestamp()
+            "criadoEm" to FieldValue.serverTimestamp(),
+            "status" to "Agendado"
         )
 
         firestore.collection("usuarios")
@@ -262,24 +231,112 @@ class Agendamento : AppCompatActivity() {
             .collection("agendamentos")
             .add(agendamento)
             .addOnSuccessListener {
-                callback(true)
+                atualizarProximoAgendamento(user.uid)
             }
             .addOnFailureListener {
-                callback(false)
+                mostrarToast(
+                    "Não foi possível sincronizar o agendamento com o servidor. Verifique sua conexão.",
+                    irParaHome = false
+                )
             }
     }
 
-    private fun mostrarMensagem(view: View, mensagem: String, cor: String, navegarParaHome: Boolean) {
-        val snackbar = Snackbar.make(view, mensagem, Snackbar.LENGTH_LONG)
-        snackbar.setBackgroundTint(Color.parseColor(cor))
-        snackbar.setTextColor(Color.WHITE)
-        snackbar.show()
+    private fun atualizarProximoAgendamento(uid: String) {
+        firestore.collection("usuarios")
+            .document(uid)
+            .collection("agendamentos")
+            .orderBy("data")
+            .orderBy("hora")
+            .limit(1)
+            .get()
+            .addOnSuccessListener { documents ->
+                if (!documents.isEmpty) {
+                    val agendamento = documents.documents[0]
+                    val hemocentro = agendamento.getString("hemocentro") ?: ""
+                    val data = agendamento.getString("data") ?: ""
+                    val hora = agendamento.getString("hora") ?: ""
 
-        if (navegarParaHome) {
-            Handler(Looper.getMainLooper()).postDelayed({
-                navegarParaHome()
-            }, 4000)
+                    val proximoAgendamento = hashMapOf(
+                        "proximoHemocentro" to hemocentro,
+                        "proximaData" to data,
+                        "proximaHora" to hora,
+                        "atualizadoEm" to FieldValue.serverTimestamp()
+                    )
+
+                    firestore.collection("usuarios")
+                        .document(uid)
+                        .collection("info")
+                        .document("proximo_agendamento")
+                        .set(proximoAgendamento)
+                }
+            }
+    }
+
+    // ---------------- REGRAS DE HORÁRIO ----------------
+
+    private fun isHorarioFuncionamentoValido(hora: String, hemocentro: String?): Boolean {
+        if (hora.isEmpty() || hemocentro == null) return false
+        val partes = hora.split(":")
+        val horas = partes.getOrNull(0)?.toIntOrNull() ?: return false
+        val minutos = partes.getOrNull(1)?.toIntOrNull() ?: 0
+
+        return when (hemocentro) {
+            "HEMOPE Recife" -> (horas in 7..17) || (horas == 18 && minutos <= 30)
+            "Hospital das Clínicas" -> horas in 7..15 || (horas == 16 && minutos == 0)
+            "IMIP" -> horas in 7..16 || (horas == 17 && minutos == 0)
+            else -> false
         }
+    }
+
+    private fun getHorarioFuncionamento(hemocentro: String?): String {
+        return hemocentros[hemocentro]?.get("horario") ?: "Horário não disponível"
+    }
+
+    // ---------------- UI HELPERS ----------------
+
+    private fun mostrarToast(
+        mensagem: String,
+        irParaHome: Boolean
+    ) {
+        runOnUiThread {
+            Toast.makeText(this, mensagem, Toast.LENGTH_LONG).show()
+
+            if (irParaHome) {
+                Handler(Looper.getMainLooper()).postDelayed({
+                    navegarParaHome()
+                }, 2500)
+            }
+        }
+    }
+
+    private fun mostrarDialogoConfirmacaoAgendamento(
+        hemocentro: String,
+        data: String,
+        hora: String,
+        endereco: String,
+        telefone: String
+    ) {
+        // Usa ViewBinding do layout do diálogo
+        val dialogBinding = DialogConfirmacaoAgendamentoBinding.inflate(layoutInflater)
+
+        dialogBinding.txtTituloConfirmacao.text = "Agendamento confirmado!"
+        dialogBinding.txtHemocentroValor.text = hemocentro
+        dialogBinding.txtDataValor.text = data
+        dialogBinding.txtHoraValor.text = hora
+        dialogBinding.txtEnderecoValor.text = endereco
+        dialogBinding.txtTelefoneValor.text = telefone
+
+        val dialog = AlertDialog.Builder(this)
+            .setView(dialogBinding.root)
+            .setCancelable(false)
+            .create()
+
+        dialogBinding.btIrParaServicos.setOnClickListener {
+            dialog.dismiss()
+            navegarParaHome()
+        }
+
+        dialog.show()
     }
 
     private fun navegarParaHome() {

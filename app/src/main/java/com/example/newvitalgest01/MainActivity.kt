@@ -1,6 +1,7 @@
 package com.example.newvitalgest01
 
 import android.content.Intent
+import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
@@ -17,6 +18,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
+    private lateinit var prefs: SharedPreferences
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,24 +28,28 @@ class MainActivity : AppCompatActivity() {
 
         supportActionBar?.hide()
 
+        prefs = getSharedPreferences("loginPrefs", MODE_PRIVATE)
+
         setupLoginButton()
         setupCadastroButton()
+        carregarLoginSalvo()
     }
 
-    override fun onStart() {
-        super.onStart()
-        // Se o usuário já estiver logado no Firebase, pula a tela de login
-        val usuario = auth.currentUser
-        if (usuario != null) {
-            navegarParaHome(usuario.email ?: "Usuário")
-            // Se não quiser voltar para tela de login:
-            // finish()
+    // 🟢 Carrega e-mail e senha se estavam salvos
+    private fun carregarLoginSalvo() {
+        val lembrar = prefs.getBoolean("lembrar", false)
+        val emailSalvo = prefs.getString("email", "")
+        val senhaSalva = prefs.getString("senha", "")
+
+        if (lembrar) {
+            binding.checkLembrarLogin.isChecked = true
+            binding.editNome.setText(emailSalvo)
+            binding.editSenha.setText(senhaSalva)
         }
     }
 
     private fun setupLoginButton() {
         binding.btLogin.setOnClickListener { view ->
-            // AGORA: usamos o campo "Nome" como E-MAIL de login
             val email = binding.editNome.text.toString().trim()
             val senha = binding.editSenha.text.toString().trim()
 
@@ -71,7 +77,19 @@ class MainActivity : AppCompatActivity() {
         auth.signInWithEmailAndPassword(email, senha)
             .addOnSuccessListener {
                 mostrarMensagem(view, "Login realizado com sucesso!", "#4CAF50")
-                // Usa o próprio e-mail como “nome” para exibir na Home
+
+                // Se o usuário marcou "Lembrar login", salvar credenciais
+                if (binding.checkLembrarLogin.isChecked) {
+                    prefs.edit()
+                        .putBoolean("lembrar", true)
+                        .putString("email", email)
+                        .putString("senha", senha)
+                        .apply()
+                } else {
+                    // Apagar se não quiser mais lembrar
+                    prefs.edit().clear().apply()
+                }
+
                 navegarParaHome(email)
             }
             .addOnFailureListener { e ->
@@ -94,7 +112,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupCadastroButton() {
         binding.btCadastrar.setOnClickListener {
-            navegarParaCadastro()
+            val intent = Intent(this, CadastroActivity::class.java)
+            startActivity(intent)
         }
     }
 
@@ -107,15 +126,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun navegarParaHome(nome: String) {
         val intent = Intent(this, Home::class.java)
-        // Continua mandando o "nome" como extra, como você já fazia
         intent.putExtra("nome", nome)
         startActivity(intent)
-        // Se quiser impedir voltar para o login ao apertar "voltar":
-        // finish()
-    }
-
-    private fun navegarParaCadastro() {
-        val intent = Intent(this, CadastroActivity::class.java)
-        startActivity(intent)
+        // finish() se quiser impedir voltar pro login
     }
 }

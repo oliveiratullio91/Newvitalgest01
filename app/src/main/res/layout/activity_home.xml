@@ -36,7 +36,6 @@
             android:gravity="center"
             android:background="@color/white"
             android:padding="12dp"
-            app:cornerRadius="8dp"
             android:layout_marginStart="20dp"
             android:layout_marginEnd="20dp"
             android:layout_marginBottom="20dp"
@@ -68,8 +67,7 @@
             android:padding="16dp"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
-            android:layout_marginBottom="16dp"
-            app:cornerRadius="12dp"/>
+            android:layout_marginBottom="16dp"/>
 
         <!-- Botão Doar Sangue -->
         <Button
@@ -84,8 +82,22 @@
             android:padding="16dp"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
-            android:layout_marginBottom="16dp"
-            app:cornerRadius="12dp"/>
+            android:layout_marginBottom="16dp"/>
+
+        <!-- Botão Meus Agendamentos -->
+        <Button
+            android:id="@+id/btMeusAgendamentos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📅 Meus Agendamentos"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/vermelho_primario"
+            android:padding="16dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="16dp"/>
 
         <!-- Botão Histórico -->
         <Button
@@ -100,8 +112,7 @@
             android:padding="16dp"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
-            android:layout_marginBottom="16dp"
-            app:cornerRadius="12dp"/>
+            android:layout_marginBottom="16dp"/>
 
         <!-- Botão Clínicas -->
         <Button
@@ -116,8 +127,7 @@
             android:padding="16dp"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
-            android:layout_marginBottom="16dp"
-            app:cornerRadius="12dp"/>
+            android:layout_marginBottom="16dp"/>
 
         <!-- Botão Contato -->
         <Button
@@ -132,8 +142,7 @@
             android:padding="16dp"
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
-            android:layout_marginBottom="40dp"
-            app:cornerRadius="12dp"/>
+            android:layout_marginBottom="40dp"/>
 
     </LinearLayout>
 </ScrollView>

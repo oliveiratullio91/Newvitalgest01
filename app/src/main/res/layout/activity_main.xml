@@ -93,6 +93,14 @@
 
         </com.google.android.material.textfield.TextInputLayout>
 
+        <CheckBox
+            android:id="@+id/checkLembrarLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lembrar login"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/black" />
+
         <Button
             android:id="@+id/btLogin"
             android:layout_width="match_parent"
@@ -107,6 +115,8 @@
             android:layout_marginStart="24dp"
             android:layout_marginEnd="24dp"
             android:layout_marginBottom="16dp"/>
+
+
 
         <Button
             android:id="@+id/btCadastrar"

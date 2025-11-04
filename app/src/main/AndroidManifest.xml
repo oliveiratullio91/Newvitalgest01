@@ -12,8 +12,24 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Newvitalgest01">
         <activity
+            android:name=".view.MeusAgendamentosActivity"
+            android:exported="false"
+            android:theme="@style/Theme.Newvitalgest01" />
+        <activity
             android:name=".view.Agendamento"
             android:exported="false" />
+        <activity
+            android:name=".view.HistoricoDoacoesActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".view.HemocentrosProximosActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".view.ContatoInformacoesActivity"
+            android:exported="false" />
+
         <activity
             android:name=".view.CadastroActivity"
             android:exported="false" />
@@ -23,10 +39,10 @@
         <activity
             android:name=".view.ElegibilidadeActivity"
             android:exported="false" />
-
         <activity
             android:name=".MainActivity"
             android:exported="true">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
