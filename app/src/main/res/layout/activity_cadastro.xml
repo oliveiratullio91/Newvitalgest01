@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fundo_claro"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="16dp"
+        tools:context=".view.CadastroActivity">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:gravity="center"
+            android:text="Cadastro"
+            android:textColor="@color/vermelho_primario"
+            android:textSize="36sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center"
+            android:layout_marginBottom="30dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/logodoador1" />
+
+        <!-- Nome Completo -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="16dp"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxStrokeColor="@color/vermelho_primario"
+            app:endIconTint="@color/vermelho_primario"
+            app:hintTextColor="@color/vermelho_primario">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editNomeCompleto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/vermelho_primario"
+                android:hint="Nome Completo"
+                android:inputType="textCapWords"
+                android:maxLines="1"
+                android:padding="16dp"
+                android:textColor="@color/azul_info"
+                android:textColorHint="@color/vermelho_primario" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Email -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="16dp"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxStrokeColor="@color/vermelho_primario"
+            app:endIconTint="@color/vermelho_primario"
+            app:hintTextColor="@color/vermelho_primario">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editEmail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/vermelho_primario"
+                android:hint="E-mail"
+                android:inputType="textEmailAddress"
+                android:maxLines="1"
+                android:padding="16dp"
+                android:textColor="@color/azul_info"
+                android:textColorHint="@color/vermelho_primario" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Telefone -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="16dp"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxStrokeColor="@color/vermelho_primario"
+            app:endIconTint="@color/vermelho_primario"
+            app:hintTextColor="@color/vermelho_primario">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTelefone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/vermelho_primario"
+                android:hint="Telefone"
+                android:inputType="phone"
+                android:maxLines="1"
+                android:padding="16dp"
+                android:textColor="@color/azul_info"
+                android:textColorHint="@color/vermelho_primario" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Senha -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="16dp"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxStrokeColor="@color/vermelho_primario"
+            app:hintTextColor="@color/vermelho_primario"
+            app:passwordToggleEnabled="true"
+            app:passwordToggleTint="@color/vermelho_primario">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editSenha"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/vermelho_primario"
+                android:hint="Senha"
+                android:inputType="textPassword"
+                android:maxLines="1"
+                android:padding="16dp"
+                android:textColor="@color/azul_info"
+                android:textColorHint="@color/vermelho_primario" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Confirmar Senha -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="24dp"
+            app:boxCornerRadiusBottomEnd="12dp"
+            app:boxCornerRadiusBottomStart="12dp"
+            app:boxCornerRadiusTopEnd="12dp"
+            app:boxCornerRadiusTopStart="12dp"
+            app:boxStrokeColor="@color/vermelho_primario"
+            app:endIconTint="@color/vermelho_primario"
+            app:hintTextColor="@color/vermelho_primario"
+            app:passwordToggleEnabled="true"
+            app:passwordToggleTint="@color/vermelho_primario">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editConfirmarSenha"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/vermelho_primario"
+                android:hint="Confirmar Senha"
+                android:inputType="textPassword"
+                android:maxLines="1"
+                android:padding="16dp"
+                android:textColor="@color/azul_info"
+                android:textColorHint="@color/vermelho_primario" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Botão Cadastrar -->
+        <Button
+            android:id="@+id/btCadastrar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="@color/vermelho_primario"
+            android:padding="16dp"
+            android:text="CADASTRAR"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:cornerRadius="12dp" />
+
+        <!-- Botão Voltar para Login -->
+        <Button
+            android:id="@+id/btVoltarLogin"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="40dp"
+            android:backgroundTint="@color/white"
+            android:padding="16dp"
+            android:text="VOLTAR PARA LOGIN"
+            android:textColor="@color/vermelho_primario"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:cornerRadius="12dp" />
+
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fundo_claro"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        tools:context=".view.Home">
+
+        <TextView
+            android:id="@+id/txtNomeUsuario"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Bem vindo(a), Usuário"
+            android:textSize="18sp"
+            android:textColor="@color/azul_info"
+            android:gravity="center"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"/>
+
+        <!-- Próximo Agendamento -->
+        <TextView
+            android:id="@+id/txtProximoAgendamento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📅 Nenhum agendamento futuro"
+            android:textSize="14sp"
+            android:textColor="@color/azul_info"
+            android:gravity="center"
+            android:background="@color/white"
+            android:padding="12dp"
+            app:cornerRadius="8dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="20dp"
+            android:elevation="2dp"/>
+
+        <TextView
+            android:id="@+id/txtTituloServicos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Serviços Disponíveis"
+            android:textColor="@color/azul_info"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:gravity="start"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:layout_marginBottom="20dp"/>
+
+        <!-- Botão Verificar Elegibilidade -->
+        <Button
+            android:id="@+id/btElegibilidade"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📋 Verificar Elegibilidade"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/vermelho_primario"
+            android:padding="16dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="16dp"
+            app:cornerRadius="12dp"/>
+
+        <!-- Botão Doar Sangue -->
+        <Button
+            android:id="@+id/btDoarSangue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🩸 Agendar Doação"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/vermelho_primario"
+            android:padding="16dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="16dp"
+            app:cornerRadius="12dp"/>
+
+        <!-- Botão Histórico -->
+        <Button
+            android:id="@+id/btHistorico"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📊 Histórico de Doações"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/vermelho_primario"
+            android:padding="16dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="16dp"
+            app:cornerRadius="12dp"/>
+
+        <!-- Botão Clínicas -->
+        <Button
+            android:id="@+id/btClinicas"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🏥 Hemocentros Próximos"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/vermelho_primario"
+            android:padding="16dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="16dp"
+            app:cornerRadius="12dp"/>
+
+        <!-- Botão Contato -->
+        <Button
+            android:id="@+id/btContato"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📞 Contato e Informações"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/vermelho_primario"
+            android:padding="16dp"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="40dp"
+            app:cornerRadius="12dp"/>
+
+    </LinearLayout>
+</ScrollView>

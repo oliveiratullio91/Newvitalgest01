@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fundo_claro"
+    android:padding="16dp"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        tools:context=".view.ElegibilidadeActivity">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📋 Verificação de Elegibilidade"
+            android:textSize="24sp"
+            android:textColor="@color/vermelho_primario"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginBottom="30dp" />
+
+        <!-- Pergunta 1 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="1. Você tem entre 16 e 69 anos?"
+            android:textSize="16sp"
+            android:textColor="@color/azul_info"
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="20dp">
+
+            <Button
+                android:id="@+id/pergunta1Sim"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Sim"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginEnd="8dp"
+                app:cornerRadius="8dp" />
+
+            <Button
+                android:id="@+id/pergunta1Nao"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Não"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginStart="8dp"
+                app:cornerRadius="8dp" />
+
+        </LinearLayout>
+
+        <!-- Pergunta 2 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="2. Você pesa mais de 50kg?"
+            android:textSize="16sp"
+            android:textColor="@color/azul_info"
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="20dp">
+
+            <Button
+                android:id="@+id/pergunta2Sim"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Sim"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginEnd="8dp"
+                app:cornerRadius="8dp" />
+
+            <Button
+                android:id="@+id/pergunta2Nao"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Não"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginStart="8dp"
+                app:cornerRadius="8dp" />
+
+        </LinearLayout>
+
+        <!-- Pergunta 3 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="3. Você está doente, grávida ou amamentando?"
+            android:textSize="16sp"
+            android:textColor="@color/azul_info"
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="30dp">
+
+            <Button
+                android:id="@+id/pergunta3Sim"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Sim"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginEnd="8dp"
+                app:cornerRadius="8dp" />
+
+            <Button
+                android:id="@+id/pergunta3Nao"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Não"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginStart="8dp"
+                app:cornerRadius="8dp" />
+
+        </LinearLayout>
+
+        <!-- Botão Verificar -->
+        <Button
+            android:id="@+id/btVerificarResultado"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="✅ Verificar Resultado"
+            android:textSize="18sp"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:backgroundTint="@color/vermelho_primario"
+            android:padding="16dp"
+            app:cornerRadius="12dp"
+            android:layout_marginBottom="20dp" />
+
+        <!-- Texto de Loading -->
+        <TextView
+            android:id="@+id/textoLoading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Voltando para a tela inicial em 2 segundos..."
+            android:textSize="14sp"
+            android:textColor="@color/azul_info"
+            android:gravity="center"
+            android:visibility="gone"
+            android:layout_marginBottom="20dp" />
+
+        <!-- Resultado Elegível -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/resultadoElegivel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp"
+            android:layout_marginBottom="10dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/white"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="🎉 Parabéns! Você pode doar sangue!"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/vermelho_primario"
+                    android:gravity="center"
+                    android:layout_marginBottom="10dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Você atende aos requisitos básicos para doação de sangue."
+                    android:textSize="14sp"
+                    android:textColor="@color/azul_info"
+                    android:gravity="center" />
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Resultado Não Elegível -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/resultadoNaoElegivel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/white"
+                android:padding="20dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="⚠️ Você não pode doar no momento"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/vermelho_primario"
+                    android:gravity="center"
+                    android:layout_marginBottom="10dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Existem alguns impedimentos. Consulte um hemocentro para mais informações."
+                    android:textSize="14sp"
+                    android:textColor="@color/azul_info"
+                    android:gravity="center" />
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+    </LinearLayout>
+</ScrollView>
