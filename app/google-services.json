@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "197185794471",
+    "firebase_url": "https://newvitalgest01-default-rtdb.firebaseio.com",
+    "project_id": "newvitalgest01",
+    "storage_bucket": "newvitalgest01.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:197185794471:android:8a2ec0ebb3748821e74682",
+        "android_client_info": {
+          "package_name": "com.example.newvitalgest01"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBpLFXYkmFLUiGFW2kjmhFn1LOeLYoJx8k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

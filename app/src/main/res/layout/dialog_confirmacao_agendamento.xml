@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/fundo_claro"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <!-- Título -->
+    <TextView
+        android:id="@+id/txtTituloConfirmacao"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Agendamento confirmado!"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/vermelho_primario"
+        android:gravity="center_horizontal"
+        android:paddingBottom="16dp" />
+
+    <!-- Hemocentro -->
+    <TextView
+        android:id="@+id/txtHemocentroLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Hemocentro"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="@color/azul_info" />
+
+    <TextView
+        android:id="@+id/txtHemocentroValor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="HEMOPE Recife"
+        android:textSize="14sp"
+        android:textColor="@android:color/black"
+        android:paddingBottom="8dp" />
+
+    <!-- Data -->
+    <TextView
+        android:id="@+id/txtDataLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Data"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="@color/azul_info" />
+
+    <TextView
+        android:id="@+id/txtDataValor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="01/01/2025"
+        android:textSize="14sp"
+        android:textColor="@android:color/black"
+        android:paddingBottom="8dp" />
+
+    <!-- Hora -->
+    <TextView
+        android:id="@+id/txtHoraLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Hora"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="@color/azul_info" />
+
+    <TextView
+        android:id="@+id/txtHoraValor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="10:00"
+        android:textSize="14sp"
+        android:textColor="@android:color/black"
+        android:paddingBottom="8dp" />
+
+    <!-- Endereço -->
+    <TextView
+        android:id="@+id/txtEnderecoLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Endereço"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="@color/azul_info" />
+
+    <TextView
+        android:id="@+id/txtEnderecoValor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Rua ..."
+        android:textSize="14sp"
+        android:textColor="@android:color/black"
+        android:paddingBottom="8dp" />
+
+    <!-- Telefone -->
+    <TextView
+        android:id="@+id/txtTelefoneLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Telefone"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:textColor="@color/azul_info" />
+
+    <TextView
+        android:id="@+id/txtTelefoneValor"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="(81) 0000-0000"
+        android:textSize="14sp"
+        android:textColor="@android:color/black"
+        android:paddingBottom="16dp" />
+
+    <!-- Botão -->
+    <Button
+        android:id="@+id/btIrParaServicos"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ir para serviços"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        android:backgroundTint="@color/vermelho_primario"
+        android:padding="12dp"
+        android:layout_marginTop="8dp" />
+
+</LinearLayout>
