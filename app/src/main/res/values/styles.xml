@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Tema base do app -->
+    <style name="Theme.NewVitalGest01" parent="Theme.Material3.Light.NoActionBar">
+        <!-- Cores principais -->
+        <item name="colorPrimary">@color/vermelho_primario</item>
+        <item name="colorPrimaryVariant">@color/vermelho_escuro</item>
+        <item name="colorOnPrimary">@android:color/white</item>
+        <item name="colorSecondary">@color/vermelho_primario</item>
+        <item name="colorOnSecondary">@android:color/white</item>
+        <item name="android:statusBarColor">@color/vermelho_escuro</item>
+        <item name="android:navigationBarColor">@color/fundo_claro</item>
+
+        <!-- Fonte padrão preta -->
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <!-- Botões principais -->
+    <style name="BotaoPrincipal" parent="Widget.Material3.Button">
+        <item name="android:backgroundTint">@color/vermelho_primario</item>
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:fontFamily">sans-serif-medium</item>
+    </style>
+
+    <!-- TextViews padrão -->
+    <style name="TextoPadrao">
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:fontFamily">sans-serif</item>
+    </style>
+
+    <!-- ============================== -->
+    <!--     PICKERS PERSONALIZADOS     -->
+    <!-- ============================== -->
+
+    <!-- Estilo do widget DatePicker com texto vermelho -->
+    <style name="Widget.DatePicker.Red" parent="@android:style/Widget.Material.DatePicker">
+        <item name="android:textColor">@color/vermelho_primario</item>
+        <item name="android:textColorPrimary">@color/vermelho_primario</item>
+        <item name="android:textColorHint">@color/vermelho_primario</item>
+    </style>
+
+    <!-- Tema aplicado no DatePicker -->
+    <style name="CustomDatePickerRed" parent="@android:style/Theme.Material.Light.Dialog">
+        <item name="android:datePickerStyle">@style/Widget.DatePicker.Red</item>
+    </style>
+
+    <!-- Estilo do widget TimePicker com texto vermelho -->
+    <style name="Widget.TimePicker.Red" parent="@android:style/Widget.Material.TimePicker">
+        <item name="android:textColor">@color/vermelho_primario</item>
+        <item name="android:textColorPrimary">@color/vermelho_primario</item>
+        <item name="android:textColorHint">@color/vermelho_primario</item>
+    </style>
+
+    <!-- Tema aplicado no TimePicker -->
+    <style name="CustomTimePickerRed" parent="@android:style/Theme.Material.Light.Dialog">
+        <item name="android:timePickerStyle">@style/Widget.TimePicker.Red</item>
+    </style>
+
+</resources>

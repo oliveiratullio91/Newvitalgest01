@@ -13,7 +13,20 @@
           "package_name": "com.example.newvitalgest01"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "197185794471-t3te1h6u5cr4oelocplq8jf5uok50ad2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.newvitalgest01",
+            "certificate_hash": "e8cdf8db54cc94362ed5fc97ced41cf2c92cb473"
+          }
+        },
+        {
+          "client_id": "197185794471-ja5qnvtho2g5n2u2k8r86ls5vjn96ajr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyBpLFXYkmFLUiGFW2kjmhFn1LOeLYoJx8k"
@@ -21,7 +34,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "197185794471-ja5qnvtho2g5n2u2k8r86ls5vjn96ajr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

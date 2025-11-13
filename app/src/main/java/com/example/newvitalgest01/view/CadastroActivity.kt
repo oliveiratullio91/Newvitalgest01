@@ -10,7 +10,9 @@ import android.text.TextWatcher
 import android.util.Patterns
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.example.newvitalgest01.MainActivity
+import com.example.newvitalgest01.R
 import com.example.newvitalgest01.databinding.ActivityCadastroBinding
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
@@ -31,11 +33,19 @@ class CadastroActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // 🔹 Deixa a faixa superior (status bar) com a mesma cor do fundo da tela
+        window.statusBarColor = ContextCompat.getColor(this, R.color.fundo_claro)
+        // (Opcional) se quiser a barra de navegação embaixo com a mesma cor:
+        window.navigationBarColor = ContextCompat.getColor(this, R.color.fundo_claro)
+
         binding = ActivityCadastroBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // 🔹 Esconde a ActionBar (barra de título do app)
         supportActionBar?.hide()
 
+        setupClearHintOnType()
         setupPhoneMask()
         setupPasswordHelper()
         setupButtons()
@@ -83,13 +93,13 @@ class CadastroActivity : AppCompatActivity() {
             }
         }
 
-        // Botão VOLTAR (para o menu / login)
+        // Botão VOLTAR (para login)
         binding.btVoltarLogin.setOnClickListener {
             navegarParaMenu()
         }
     }
 
-    // ------------- CADASTRO NO FIREBASE (AUTH + Firestore em paralelo) -------------
+    // ------------- CADASTRO NO FIREBASE (AUTH + Firestore) -------------
 
     private fun cadastrarNoFirebase(
         nomeCompleto: String,
@@ -135,7 +145,7 @@ class CadastroActivity : AppCompatActivity() {
                     salvarUsuarioNoFirestore(uid, nomeCompleto, email, telefone)
                 }
 
-                // 👉 Dá tempo de ler a mensagem e depois volta pra tela de login
+                // Dá tempo de ler a mensagem e depois volta pra tela de login
                 handler.postDelayed({
                     navegarParaMenu()
                 }, 2000)
@@ -158,8 +168,7 @@ class CadastroActivity : AppCompatActivity() {
         firestore.collection("usuarios")
             .document(uid)
             .set(usuarioMap)
-            .addOnFailureListener { e ->
-                // Só um aviso rápido caso dê erro – não trava o fluxo
+            .addOnFailureListener { _ ->
                 Toast.makeText(
                     this,
                     "Conta criada, mas houve erro ao salvar dados no servidor.",
@@ -248,13 +257,52 @@ class CadastroActivity : AppCompatActivity() {
         })
     }
 
+    // ------------- SUMIR HINT AO DIGITAR -------------
+
+    private fun setupClearHintOnType() {
+        val campos = listOf(
+            binding.editNomeCompleto,
+            binding.editEmail,
+            binding.editTelefone,
+            binding.editSenha,
+            binding.editConfirmarSenha
+        )
+
+        // guarda o hint original de cada campo
+        val hintsOriginais = campos.associateWith { it.hint?.toString() ?: "" }
+
+        campos.forEach { editText ->
+            editText.addTextChangedListener(object : TextWatcher {
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
+
+                override fun onTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    before: Int,
+                    count: Int
+                ) {
+                    val original = hintsOriginais[editText] ?: ""
+                    // se tiver texto -> some o hint, se apagar tudo -> aparece de novo
+                    editText.hint = if (s.isNullOrEmpty()) original else ""
+                }
+
+                override fun afterTextChanged(s: Editable?) {}
+            })
+        }
+    }
+
     // ------------- UTILITÁRIOS -------------
 
     private fun isEmailValido(email: String): Boolean {
         return Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
-    // Usa sempre a root view pra garantir que o Snackbar aparece
     private fun mostrarMensagem(mensagem: String, cor: String) {
         val snackbar = Snackbar.make(binding.root, mensagem, Snackbar.LENGTH_LONG)
         snackbar.setBackgroundTint(Color.parseColor(cor))

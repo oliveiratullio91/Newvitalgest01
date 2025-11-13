@@ -1,75 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/fundo_claro"
-    tools:context=".view.MeusAgendamentosActivity">
+    android:orientation="vertical"
+    android:padding="16dp">
 
-    <!-- Botão superior -->
-    <Button
-        android:id="@+id/btnVoltarMeusAgendamentos"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Voltar"
-        android:textAllCaps="false"
-        android:textColor="@android:color/white"
-        android:textSize="16sp"
-        android:backgroundTint="@color/vermelho_primario"
-        android:paddingStart="20dp"
-        android:paddingEnd="20dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp"
-        android:layout_margin="16dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <!-- Título -->
     <TextView
-        android:id="@+id/txtTituloMeusAgendamentos"
-        android:layout_width="0dp"
+        android:id="@+id/txtTitulo"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Minhas doações agendadas"
-        android:textColor="@color/vermelho_primario"
+        android:text="Meus Agendamentos"
         android:textSize="20sp"
         android:textStyle="bold"
-        android:gravity="center_horizontal"
-        android:padding="12dp"
-        app:layout_constraintTop_toBottomOf="@id/btnVoltarMeusAgendamentos"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:textColor="@color/vermelho_primario"
+        android:gravity="center"
+        android:layout_marginBottom="12dp" />
 
-    <!-- Campo de filtro -->
-    <EditText
-        android:id="@+id/edtFiltroAgendamentos"
-        android:layout_width="0dp"
+    <!-- Mensagem quando não houver nenhum agendamento -->
+    <TextView
+        android:id="@+id/txtMensagemVazio"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
+        android:text="Você ainda não possui agendamentos."
+        android:textSize="14sp"
+        android:textColor="@color/azul_info"
+        android:gravity="center"
+        android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:hint="Filtrar por hemocentro, data ou hora..."
-        android:padding="12dp"
-        android:background="@drawable/bg_edittext"
-        android:drawableStart="@android:drawable/ic_menu_search"
-        android:drawablePadding="8dp"
-        android:inputType="text"
-        app:layout_constraintTop_toBottomOf="@id/txtTituloMeusAgendamentos"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:visibility="gone" />
 
-    <!-- Lista de agendamentos -->
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerAgendamentos"
-        android:layout_width="0dp"
+        android:id="@+id/recyclerMeusAgendamentos"
+        android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:layout_constraintTop_toBottomOf="@+id/edtFiltroAgendamentos"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:listitem="@layout/item_agendamento" />
+        android:layout_weight="1"
+        android:paddingBottom="12dp" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <Button
+        android:id="@+id/btnVoltar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Voltar"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:backgroundTint="@color/vermelho_primario"
+        android:padding="16dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="16dp" />
+
+</LinearLayout>

@@ -5,15 +5,17 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/fundo_claro"
-    android:padding="16dp"
-    android:fillViewport="true">
+    android:padding="24dp"
+    android:fillViewport="true"
+    tools:context=".view.ElegibilidadeActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        tools:context=".view.ElegibilidadeActivity">
+        android:gravity="center_horizontal">
 
+        <!-- Título -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -22,17 +24,42 @@
             android:textColor="@color/vermelho_primario"
             android:textStyle="bold"
             android:gravity="center"
-            android:layout_marginBottom="30dp" />
+            android:layout_marginBottom="8dp"
+            android:fontFamily="sans-serif-medium" />
 
-        <!-- Pergunta 1 -->
+        <!-- Aviso importante -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Este quiz é uma pré-avaliação e não substitui a triagem feita pelo profissional de saúde no hemocentro."
+            android:textSize="13sp"
+            android:textColor="@android:color/black"
+            android:gravity="center"
+            android:layout_marginBottom="24dp"
+            android:fontFamily="sans-serif" />
+
+        <!-- ============= SEÇÃO 1: REQUISITOS BÁSICOS (1-4) ============= -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🔹 Requisitos básicos"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/vermelho_primario"
+            android:layout_marginBottom="12dp"
+            android:fontFamily="sans-serif-medium" />
+
+        <!-- Perguntas 1 a 4 -->
+        <!-- P1 -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="1. Você tem entre 16 e 69 anos?"
             android:textSize="16sp"
-            android:textColor="@color/azul_info"
+            android:textColor="@android:color/black"
             android:textStyle="bold"
-            android:layout_marginBottom="10dp" />
+            android:layout_marginBottom="10dp"
+            android:fontFamily="sans-serif" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -63,18 +90,18 @@
                 android:backgroundTint="@color/vermelho_primario"
                 android:layout_marginStart="8dp"
                 app:cornerRadius="8dp" />
-
         </LinearLayout>
 
-        <!-- Pergunta 2 -->
+        <!-- P2 -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="2. Você pesa mais de 50kg?"
+            android:text="2. Você pesa mais de 50 kg?"
             android:textSize="16sp"
-            android:textColor="@color/azul_info"
+            android:textColor="@android:color/black"
             android:textStyle="bold"
-            android:layout_marginBottom="10dp" />
+            android:layout_marginBottom="10dp"
+            android:fontFamily="sans-serif" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -105,24 +132,24 @@
                 android:backgroundTint="@color/vermelho_primario"
                 android:layout_marginStart="8dp"
                 app:cornerRadius="8dp" />
-
         </LinearLayout>
 
-        <!-- Pergunta 3 -->
+        <!-- P3 -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="3. Você está doente, grávida ou amamentando?"
+            android:text="3. Você dormiu pelo menos 6 horas nas últimas 24 horas?"
             android:textSize="16sp"
-            android:textColor="@color/azul_info"
+            android:textColor="@android:color/black"
             android:textStyle="bold"
-            android:layout_marginBottom="10dp" />
+            android:layout_marginBottom="10dp"
+            android:fontFamily="sans-serif" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_marginBottom="30dp">
+            android:layout_marginBottom="20dp">
 
             <Button
                 android:id="@+id/pergunta3Sim"
@@ -147,7 +174,830 @@
                 android:backgroundTint="@color/vermelho_primario"
                 android:layout_marginStart="8dp"
                 app:cornerRadius="8dp" />
+        </LinearLayout>
 
+        <!-- P4 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="4. Você se alimentou nas últimas 4 horas e não comeu alimentos muito gordurosos?"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="sans-serif" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="24dp">
+
+            <Button
+                android:id="@+id/pergunta4Sim"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Sim"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginEnd="8dp"
+                app:cornerRadius="8dp" />
+
+            <Button
+                android:id="@+id/pergunta4Nao"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Não"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginStart="8dp"
+                app:cornerRadius="8dp" />
+        </LinearLayout>
+
+        <!-- ============= SEÇÃO 2: SAÚDE ATUAL (5-10) ============= -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🔹 Saúde atual e doenças"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/vermelho_primario"
+            android:layout_marginBottom="12dp"
+            android:fontFamily="sans-serif-medium" />
+
+        <!-- Para não ficar gigantesco: as perguntas de 5 a 10 seguem o mesmo padrão -->
+        <!-- P5 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="5. Você consumiu bebida alcoólica nas últimas 12 horas?"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="sans-serif" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="20dp">
+
+            <Button
+                android:id="@+id/pergunta5Sim"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Sim"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginEnd="8dp"
+                app:cornerRadius="8dp" />
+
+            <Button
+                android:id="@+id/pergunta5Nao"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Não"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginStart="8dp"
+                app:cornerRadius="8dp" />
+        </LinearLayout>
+
+        <!-- P6 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="6. Você está com febre, infecção ou se sentindo mal hoje?"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="sans-serif" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="20dp">
+
+            <Button
+                android:id="@+id/pergunta6Sim"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Sim"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginEnd="8dp"
+                app:cornerRadius="8dp" />
+
+            <Button
+                android:id="@+id/pergunta6Nao"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Não"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginStart="8dp"
+                app:cornerRadius="8dp" />
+        </LinearLayout>
+
+        <!-- P7 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="7. Você está usando antibióticos ou medicamentos controlados?"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="sans-serif" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="20dp">
+
+            <Button
+                android:id="@+id/pergunta7Sim"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Sim"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginEnd="8dp"
+                app:cornerRadius="8dp" />
+
+            <Button
+                android:id="@+id/pergunta7Nao"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Não"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginStart="8dp"
+                app:cornerRadius="8dp" />
+        </LinearLayout>
+
+        <!-- P8 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="8. Você tem alguma doença crônica grave ou descompensada?"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="sans-serif" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="20dp">
+
+            <Button
+                android:id="@+id/pergunta8Sim"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Sim"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginEnd="8dp"
+                app:cornerRadius="8dp" />
+
+            <Button
+                android:id="@+id/pergunta8Nao"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Não"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginStart="8dp"
+                app:cornerRadius="8dp" />
+        </LinearLayout>
+
+        <!-- P9 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="9. Você já teve hepatite após os 11 anos de idade?"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="sans-serif" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="20dp">
+
+            <Button
+                android:id="@+id/pergunta9Sim"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Sim"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginEnd="8dp"
+                app:cornerRadius="8dp" />
+
+            <Button
+                android:id="@+id/pergunta9Nao"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Não"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginStart="8dp"
+                app:cornerRadius="8dp" />
+        </LinearLayout>
+
+        <!-- P10 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="10. Você tem ou já teve HIV, sífilis, hepatite B ou C, doença de Chagas ou malária?"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="sans-serif" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="24dp">
+
+            <Button
+                android:id="@+id/pergunta10Sim"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Sim"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginEnd="8dp"
+                app:cornerRadius="8dp" />
+
+            <Button
+                android:id="@+id/pergunta10Nao"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Não"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginStart="8dp"
+                app:cornerRadius="8dp" />
+        </LinearLayout>
+
+        <!-- ============= SEÇÃO 3: COMPORTAMENTOS / PROCEDIMENTOS (11-22) ============= -->
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🔹 Histórico recente, procedimentos e comportamentos"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@color/vermelho_primario"
+            android:layout_marginBottom="12dp"
+            android:fontFamily="sans-serif-medium" />
+
+        <!-- Para simplificar: perguntas 11 a 22 seguem o mesmo padrão de layout, mudando apenas o texto -->
+
+        <!-- P11 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="11. Você fez tatuagem ou piercing nos últimos 6 meses?"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="sans-serif" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="20dp">
+
+            <Button
+                android:id="@+id/pergunta11Sim"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Sim"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginEnd="8dp"
+                app:cornerRadius="8dp" />
+
+            <Button
+                android:id="@+id/pergunta11Nao"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Não"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginStart="8dp"
+                app:cornerRadius="8dp" />
+        </LinearLayout>
+
+        <!-- P12 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="12. Você fez tratamento dentário invasivo nos últimos 7 dias?"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="sans-serif" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="20dp">
+
+            <Button
+                android:id="@+id/pergunta12Sim"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Sim"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginEnd="8dp"
+                app:cornerRadius="8dp" />
+
+            <Button
+                android:id="@+id/pergunta12Nao"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Não"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginStart="8dp"
+                app:cornerRadius="8dp" />
+        </LinearLayout>
+
+        <!-- P13 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="13. Você fez cirurgia recentemente (menos de 3 meses)?"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="sans-serif" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="20dp">
+
+            <Button
+                android:id="@+id/pergunta13Sim"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Sim"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginEnd="8dp"
+                app:cornerRadius="8dp" />
+
+            <Button
+                android:id="@+id/pergunta13Nao"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Não"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginStart="8dp"
+                app:cornerRadius="8dp" />
+        </LinearLayout>
+
+        <!-- P14 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="14. Você esteve grávida, grávida recentemente ou está amamentando?"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="sans-serif" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="20dp">
+
+            <Button
+                android:id="@+id/pergunta14Sim"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Sim"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginEnd="8dp"
+                app:cornerRadius="8dp" />
+
+            <Button
+                android:id="@+id/pergunta14Nao"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Não"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginStart="8dp"
+                app:cornerRadius="8dp" />
+        </LinearLayout>
+
+        <!-- P15 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="15. Você recebeu transfusão de sangue alguma vez na vida?"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="sans-serif" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="20dp">
+
+            <Button
+                android:id="@+id/pergunta15Sim"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Sim"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginEnd="8dp"
+                app:cornerRadius="8dp" />
+
+            <Button
+                android:id="@+id/pergunta15Nao"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Não"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginStart="8dp"
+                app:cornerRadius="8dp" />
+        </LinearLayout>
+
+        <!-- P16 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="16. Você teve contato íntimo sem proteção com parceiro de risco para DST?"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="sans-serif" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="20dp">
+
+            <Button
+                android:id="@+id/pergunta16Sim"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Sim"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginEnd="8dp"
+                app:cornerRadius="8dp" />
+
+            <Button
+                android:id="@+id/pergunta16Nao"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Não"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginStart="8dp"
+                app:cornerRadius="8dp" />
+        </LinearLayout>
+
+        <!-- P17 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="17. Você usou drogas ilícitas injetáveis alguma vez?"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="sans-serif" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="20dp">
+
+            <Button
+                android:id="@+id/pergunta17Sim"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Sim"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginEnd="8dp"
+                app:cornerRadius="8dp" />
+
+            <Button
+                android:id="@+id/pergunta17Nao"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Não"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginStart="8dp"
+                app:cornerRadius="8dp" />
+        </LinearLayout>
+
+        <!-- P18 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="18. Você recebeu alguma vacina recentemente (menos de 30 dias)?"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="sans-serif" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="20dp">
+
+            <Button
+                android:id="@+id/pergunta18Sim"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Sim"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginEnd="8dp"
+                app:cornerRadius="8dp" />
+
+            <Button
+                android:id="@+id/pergunta18Nao"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Não"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginStart="8dp"
+                app:cornerRadius="8dp" />
+        </LinearLayout>
+
+        <!-- P19 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="19. Você esteve fora do país em área endêmica para malária nos últimos 12 meses?"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="sans-serif" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="20dp">
+
+            <Button
+                android:id="@+id/pergunta19Sim"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Sim"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginEnd="8dp"
+                app:cornerRadius="8dp" />
+
+            <Button
+                android:id="@+id/pergunta19Nao"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Não"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginStart="8dp"
+                app:cornerRadius="8dp" />
+        </LinearLayout>
+
+        <!-- P20 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="20. Você teve COVID-19 recentemente ou está em investigação?"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="sans-serif" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="20dp">
+
+            <Button
+                android:id="@+id/pergunta20Sim"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Sim"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginEnd="8dp"
+                app:cornerRadius="8dp" />
+
+            <Button
+                android:id="@+id/pergunta20Nao"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Não"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginStart="8dp"
+                app:cornerRadius="8dp" />
+        </LinearLayout>
+
+        <!-- P21 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="21. Você já teve diagnóstico de COVID-19 há menos de 10 dias?"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="sans-serif" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="20dp">
+
+            <Button
+                android:id="@+id/pergunta21Sim"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Sim"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginEnd="8dp"
+                app:cornerRadius="8dp" />
+
+            <Button
+                android:id="@+id/pergunta21Nao"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Não"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginStart="8dp"
+                app:cornerRadius="8dp" />
+        </LinearLayout>
+
+        <!-- P22 -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="22. Você tem algum outro problema de saúde importante que não foi mencionado?"
+            android:textSize="16sp"
+            android:textColor="@android:color/black"
+            android:textStyle="bold"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="sans-serif" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="30dp">
+
+            <Button
+                android:id="@+id/pergunta22Sim"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Sim"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginEnd="8dp"
+                app:cornerRadius="8dp" />
+
+            <Button
+                android:id="@+id/pergunta22Nao"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Não"
+                android:textSize="14sp"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:layout_marginStart="8dp"
+                app:cornerRadius="8dp" />
         </LinearLayout>
 
         <!-- Botão Verificar -->
@@ -169,12 +1019,13 @@
             android:id="@+id/textoLoading"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Voltando para a tela inicial em 2 segundos..."
+            android:text="Voltando para a tela inicial em 2 segundos."
             android:textSize="14sp"
-            android:textColor="@color/azul_info"
+            android:textColor="@android:color/black"
             android:gravity="center"
             android:visibility="gone"
-            android:layout_marginBottom="20dp" />
+            android:layout_marginBottom="20dp"
+            android:fontFamily="sans-serif" />
 
         <!-- Resultado Elegível -->
         <androidx.cardview.widget.CardView
@@ -196,21 +1047,22 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="🎉 Parabéns! Você pode doar sangue!"
+                    android:text="🎉 Você aparenta estar apto(a) a doar sangue!"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="@color/vermelho_primario"
                     android:gravity="center"
-                    android:layout_marginBottom="10dp" />
+                    android:layout_marginBottom="10dp"
+                    android:fontFamily="sans-serif-medium" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Você atende aos requisitos básicos para doação de sangue."
+                    android:text="Com base nas suas respostas, você atende aos requisitos básicos. A confirmação final será feita pela equipe de triagem no hemocentro."
                     android:textSize="14sp"
-                    android:textColor="@color/azul_info"
-                    android:gravity="center" />
-
+                    android:textColor="@android:color/black"
+                    android:gravity="center"
+                    android:fontFamily="sans-serif" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -233,21 +1085,22 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="⚠️ Você não pode doar no momento"
+                    android:text="⚠️ Neste momento você não deve doar sangue"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:textColor="@color/vermelho_primario"
                     android:gravity="center"
-                    android:layout_marginBottom="10dp" />
+                    android:layout_marginBottom="10dp"
+                    android:fontFamily="sans-serif-medium" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Existem alguns impedimentos. Consulte um hemocentro para mais informações."
+                    android:text="De acordo com suas respostas, existem impedimentos temporários ou definitivos. Procure um hemocentro para orientação sobre quando poderá doar com segurança."
                     android:textSize="14sp"
-                    android:textColor="@color/azul_info"
-                    android:gravity="center" />
-
+                    android:textColor="@android:color/black"
+                    android:gravity="center"
+                    android:fontFamily="sans-serif" />
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 

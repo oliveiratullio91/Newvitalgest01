@@ -10,45 +10,62 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Newvitalgest01">
+        android:theme="@style/Theme.Newvitalgest01"
+        tools:targetApi="34">
+
+        <!-- Tela principal (launcher) -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Newvitalgest01">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Outras telas da aplicação -->
         <activity
             android:name=".view.MeusAgendamentosActivity"
             android:exported="false"
             android:theme="@style/Theme.Newvitalgest01" />
+
         <activity
             android:name=".view.Agendamento"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.Newvitalgest01" />
+
         <activity
             android:name=".view.HistoricoDoacoesActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.Newvitalgest01" />
 
         <activity
             android:name=".view.HemocentrosProximosActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.Newvitalgest01" />
 
         <activity
             android:name=".view.ContatoInformacoesActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.Newvitalgest01" />
 
         <activity
             android:name=".view.CadastroActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.Newvitalgest01" />
+
         <activity
             android:name=".view.Home"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.Newvitalgest01" />
+
         <activity
             android:name=".view.ElegibilidadeActivity"
-            android:exported="false" />
-        <activity
-            android:name=".MainActivity"
-            android:exported="true">
+            android:exported="false"
+            android:theme="@style/Theme.Newvitalgest01" />
 
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
     </application>
 
 </manifest>

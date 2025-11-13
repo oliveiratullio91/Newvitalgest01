@@ -11,138 +11,305 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="16dp"
+        android:padding="20dp"
         tools:context=".view.Home">
 
-        <TextView
-            android:id="@+id/txtNomeUsuario"
+        <!-- CARD CABEÇALHO -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Bem vindo(a), Usuário"
-            android:textSize="18sp"
-            android:textColor="@color/azul_info"
-            android:gravity="center"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="20dp"/>
-
-        <!-- Próximo Agendamento -->
-        <TextView
-            android:id="@+id/txtProximoAgendamento"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="📅 Nenhum agendamento futuro"
-            android:textSize="14sp"
-            android:textColor="@color/azul_info"
-            android:gravity="center"
-            android:background="@color/white"
-            android:padding="12dp"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
             android:layout_marginBottom="20dp"
-            android:elevation="2dp"/>
+            app:cardCornerRadius="20dp"
+            app:cardElevation="6dp"
+            app:cardUseCompatPadding="true"
+            android:backgroundTint="@android:color/white">
 
-        <TextView
-            android:id="@+id/txtTituloServicos"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="18dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="🩸 VitalGest"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/vermelho_primario"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="center_horizontal"
+                    android:layout_marginBottom="4dp" />
+
+                <TextView
+                    android:id="@+id/txtSaudacao"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Bem-vindo(a),"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/black"
+                    android:fontFamily="sans-serif"
+                    android:gravity="center_horizontal"
+                    android:layout_marginBottom="2dp" />
+
+                <TextView
+                    android:id="@+id/txtNomeUsuario"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Tullio Silva De Oliveira"
+                    android:textSize="19sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/black"
+                    android:fontFamily="sans-serif"
+                    android:gravity="center_horizontal"
+                    android:maxLines="2"
+                    android:layout_marginBottom="6dp" />
+
+                <TextView
+                    android:id="@+id/txtStatusElegibilidade"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Status: Elegível"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/verde_sucesso"
+                    android:fontFamily="sans-serif"
+                    android:gravity="center_horizontal"
+                    android:layout_marginBottom="6dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Acompanhe seus agendamentos e doe com segurança."
+                    android:textSize="13sp"
+                    android:textColor="@color/cinza_texto"
+                    android:fontFamily="sans-serif"
+                    android:gravity="center_horizontal" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- CARD PRÓXIMO AGENDAMENTO -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Serviços Disponíveis"
-            android:textColor="@color/azul_info"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:gravity="start"
-            android:layout_marginStart="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginBottom="20dp"/>
+            android:layout_marginBottom="24dp"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="4dp"
+            app:cardUseCompatPadding="true"
+            android:backgroundTint="@android:color/white">
 
-        <!-- Botão Verificar Elegibilidade -->
-        <Button
-            android:id="@+id/btElegibilidade"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Próximo agendamento"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/black"
+                    android:fontFamily="sans-serif"
+                    android:layout_marginBottom="6dp" />
+
+                <TextView
+                    android:id="@+id/txtProximoAgendamento"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="📅 Nenhuma doação agendada"
+                    android:textSize="14sp"
+                    android:textColor="@color/cinza_texto"
+                    android:fontFamily="sans-serif"
+                    android:layout_marginBottom="8dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="end">
+
+                    <TextView
+                        android:id="@+id/txtStatusAgendamento"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="⏳ Pendente"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/azul_info"
+                        android:paddingHorizontal="10dp"
+                        android:paddingVertical="4dp"
+                        android:background="@drawable/bg_chip_status_padrao"
+                        android:gravity="center"
+                        android:visibility="gone" />
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- TÍTULO CENTRALIZADO E DESTACADO -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="📋 Verificar Elegibilidade"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@color/white"
-            android:backgroundTint="@color/vermelho_primario"
-            android:padding="16dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
-            android:layout_marginBottom="16dp"/>
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="12dp">
 
-        <!-- Botão Doar Sangue -->
-        <Button
-            android:id="@+id/btDoarSangue"
+            <TextView
+                android:id="@+id/txtTituloServicos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Serviços disponíveis"
+                android:textColor="@android:color/black"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:fontFamily="sans-serif-medium"
+                android:letterSpacing="0.04"
+                android:layout_marginBottom="6dp" />
+
+            <View
+                android:layout_width="90dp"
+                android:layout_height="3dp"
+                android:background="@color/vermelho_primario"
+                android:layout_marginBottom="6dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="O que você deseja fazer hoje?"
+                android:textColor="@color/cinza_texto"
+                android:textSize="13sp"
+                android:fontFamily="sans-serif" />
+        </LinearLayout>
+
+        <!-- CARD SERVIÇOS -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="🩸 Agendar Doação"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@color/white"
-            android:backgroundTint="@color/vermelho_primario"
-            android:padding="16dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
-            android:layout_marginBottom="16dp"/>
+            app:cardCornerRadius="20dp"
+            app:cardElevation="4dp"
+            app:cardUseCompatPadding="true"
+            android:backgroundTint="@android:color/white">
 
-        <!-- Botão Meus Agendamentos -->
-        <Button
-            android:id="@+id/btMeusAgendamentos"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btElegibilidade"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="📋 Verificar elegibilidade"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:paddingVertical="14dp"
+                    android:layout_marginBottom="10dp"
+                    android:backgroundTint="@color/vermelho_primario"
+                    android:textColor="@android:color/white"
+                    app:cornerRadius="18dp"
+                    app:elevation="2dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btDoarSangue"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="🩸 Agendar doação"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:paddingVertical="14dp"
+                    android:layout_marginBottom="10dp"
+                    android:backgroundTint="@color/vermelho_primario"
+                    android:textColor="@android:color/white"
+                    app:cornerRadius="18dp"
+                    app:elevation="2dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btMeusAgendamentos"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="📅 Meus agendamentos"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:paddingVertical="14dp"
+                    android:layout_marginBottom="10dp"
+                    android:backgroundTint="@color/vermelho_primario"
+                    android:textColor="@android:color/white"
+                    app:cornerRadius="18dp"
+                    app:elevation="2dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btHistorico"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="📊 Histórico de doações"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:paddingVertical="14dp"
+                    android:layout_marginBottom="10dp"
+                    android:backgroundTint="@color/vermelho_primario"
+                    android:textColor="@android:color/white"
+                    app:cornerRadius="18dp"
+                    app:elevation="2dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btClinicas"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="🏥 Hemocentros próximos"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:paddingVertical="14dp"
+                    android:layout_marginBottom="10dp"
+                    android:backgroundTint="@color/vermelho_primario"
+                    android:textColor="@android:color/white"
+                    app:cornerRadius="18dp"
+                    app:elevation="2dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btContato"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="📞 Contato e informações"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:paddingVertical="14dp"
+                    android:layout_marginBottom="10dp"
+                    android:backgroundTint="@color/vermelho_primario"
+                    android:textColor="@android:color/white"
+                    app:cornerRadius="18dp"
+                    app:elevation="2dp" />
+
+                <!-- NOVO BOTÃO SAIR -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btSair"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="🚪 Sair"
+                    android:textAllCaps="false"
+                    android:textSize="16sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:paddingVertical="14dp"
+                    android:layout_marginTop="10dp"
+                    android:backgroundTint="@color/vermelho_primario"
+                    android:textColor="@android:color/white"
+                    app:cornerRadius="18dp"
+                    app:elevation="2dp" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <View
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="📅 Meus Agendamentos"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@color/white"
-            android:backgroundTint="@color/vermelho_primario"
-            android:padding="16dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
-            android:layout_marginBottom="16dp"/>
-
-        <!-- Botão Histórico -->
-        <Button
-            android:id="@+id/btHistorico"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="📊 Histórico de Doações"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@color/white"
-            android:backgroundTint="@color/vermelho_primario"
-            android:padding="16dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
-            android:layout_marginBottom="16dp"/>
-
-        <!-- Botão Clínicas -->
-        <Button
-            android:id="@+id/btClinicas"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="🏥 Hemocentros Próximos"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@color/white"
-            android:backgroundTint="@color/vermelho_primario"
-            android:padding="16dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
-            android:layout_marginBottom="16dp"/>
-
-        <!-- Botão Contato -->
-        <Button
-            android:id="@+id/btContato"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="📞 Contato e Informações"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@color/white"
-            android:backgroundTint="@color/vermelho_primario"
-            android:padding="16dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginEnd="24dp"
-            android:layout_marginBottom="40dp"/>
-
+            android:layout_height="24dp" />
     </LinearLayout>
 </ScrollView>

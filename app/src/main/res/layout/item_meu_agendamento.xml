@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="16dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginBottom="8dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp"
+    android:foreground="?attr/selectableItemBackground">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="12dp">
+
+        <LinearLayout
+            android:id="@+id/layoutConteudo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingEnd="8dp"
+            android:layout_alignParentTop="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:id="@+id/txtHemocentroItem"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="HEMOPE Recife"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:textColor="@android:color/black" />
+
+                <TextView
+                    android:id="@+id/txtStatusItem"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Status: Pendente"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="10dp"
+                    android:paddingTop="4dp"
+                    android:paddingBottom="4dp"
+                    android:background="@drawable/bg_status_pendente"
+                    android:textColor="@android:color/white" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/txtDataHoraItem"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="📅 00/00/0000 às 00:00"
+                android:textSize="14sp"
+                android:textColor="@color/black"
+                android:layout_marginTop="6dp" />
+
+            <TextView
+                android:id="@+id/txtEnderecoItem"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="📍 Endereço do hemocentro"
+                android:textSize="13sp"
+                android:textColor="@color/black"
+                android:layout_marginTop="4dp" />
+
+            <TextView
+                android:id="@+id/txtTelefoneItem"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="☎ Telefone"
+                android:textSize="13sp"
+                android:textColor="@color/black"
+                android:layout_marginTop="2dp"
+                android:layout_marginBottom="8dp" />
+        </LinearLayout>
+
+        <!-- Botão cancelar -->
+        <Button
+            android:id="@+id/btnCancelarAgendamento"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:text="Cancelar"
+            android:textSize="12sp"
+            android:textColor="@android:color/white"
+            android:backgroundTint="@color/vermelho_primario"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/layoutConteudo"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="4dp"
+            android:layout_gravity="end|bottom"
+            android:elevation="2dp" />
+    </RelativeLayout>
+</androidx.cardview.widget.CardView>

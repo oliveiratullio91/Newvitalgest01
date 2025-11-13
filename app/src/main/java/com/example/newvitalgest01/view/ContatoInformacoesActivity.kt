@@ -2,9 +2,11 @@ package com.example.newvitalgest01.view
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.example.newvitalgest01.R
 
 class ContatoInformacoesActivity : AppCompatActivity() {
@@ -12,12 +14,23 @@ class ContatoInformacoesActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_contato_informacoes)
 
-        // Configura o ActionBar com título e botão de voltar (seta no topo)
-        supportActionBar?.apply {
-            title = "Contato e Informações"
-            setDisplayHomeAsUpEnabled(true)
-            setHomeAsUpIndicator(R.drawable.ic_arrow_back) // ícone da seta
-            elevation = 8f // sombra sutil para dar destaque
+        // 🔹 Remove completamente a ActionBar (a faixa azul superior)
+        supportActionBar?.hide()
+
+        // 🔹 Deixa status bar e navigation bar com a mesma cor do fundo
+        window.statusBarColor = ContextCompat.getColor(this, R.color.fundo_claro)
+        window.navigationBarColor = ContextCompat.getColor(this, R.color.fundo_claro)
+
+        // 🔹 Ícones escuros na barra de status (modo claro)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            window.insetsController?.setSystemBarsAppearance(
+                android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
+                android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
+            )
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            @Suppress("DEPRECATION")
+            window.decorView.systemUiVisibility =
+                window.decorView.systemUiVisibility or android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         }
 
         val btnEmail = findViewById<Button>(R.id.btnEmail)
@@ -54,11 +67,5 @@ class ContatoInformacoesActivity : AppCompatActivity() {
         btnVoltar.setOnClickListener {
             finish()
         }
-    }
-
-    // Função da seta de voltar no ActionBar (caso esteja aparecendo)
-    override fun onSupportNavigateUp(): Boolean {
-        onBackPressedDispatcher.onBackPressed()
-        return true
     }
 }

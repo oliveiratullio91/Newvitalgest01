@@ -1,9 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.Newvitalgest01" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+
+    <!-- BASE THEME -->
+    <style name="Base.Theme.Newvitalgest01" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Cores principais -->
+        <item name="colorPrimary">@color/azul_primario</item>
+        <item name="colorPrimaryVariant">@color/azul_primario</item>
+        <item name="colorOnPrimary">@android:color/white</item>
+
+        <item name="colorSecondary">@color/vermelho_primario</item>
+        <item name="colorAccent">@color/vermelho_primario</item>
+
+        <!-- Fundo e status bar -->
+        <item name="android:windowBackground">@android:color/white</item>
+        <item name="android:statusBarColor" tools:targetApi="l">@color/azul_primario</item>
+
+        <!-- Texto padrão em preto -->
+        <item name="android:textColor">@android:color/black</item>
+
+        <!-- Fonte padrão do sistema (Roboto / sans-serif) -->
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="fontFamily">sans-serif</item>
     </style>
 
+    <!-- Tema principal da app -->
     <style name="Theme.Newvitalgest01" parent="Base.Theme.Newvitalgest01" />
+
+    <!-- AlertDialog -->
+    <style name="CustomAlertDialogTheme" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="colorPrimary">@color/azul_primario</item>
+        <item name="colorAccent">@color/vermelho_primario</item>
+        <item name="android:buttonTint">@color/azul_primario</item>
+
+        <!-- Texto preto + fonte padrão -->
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="fontFamily">sans-serif</item>
+    </style>
+
+    <!-- DatePicker -->
+    <style name="CustomDatePickerTheme" parent="Theme.MaterialComponents.DayNight.Dialog">
+        <item name="colorPrimary">@color/azul_primario</item>
+        <item name="colorAccent">@color/azul_primario</item>
+        <item name="android:buttonTint">@color/azul_primario</item>
+
+        <!-- Texto preto + fonte padrão -->
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="fontFamily">sans-serif</item>
+    </style>
+
+    <!-- TimePicker -->
+    <style name="CustomTimePickerTheme" parent="Theme.MaterialComponents.DayNight.Dialog">
+        <item name="colorPrimary">@color/azul_primario</item>
+        <item name="colorAccent">@color/vermelho_primario</item>
+        <item name="android:buttonTint">@color/azul_primario</item>
+
+        <!-- Texto preto + fonte padrão -->
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:fontFamily">sans-serif</item>
+        <item name="fontFamily">sans-serif</item>
+    </style>
+
 </resources>

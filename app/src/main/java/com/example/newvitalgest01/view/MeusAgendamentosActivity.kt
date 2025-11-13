@@ -1,132 +1,105 @@
 package com.example.newvitalgest01.view
 
+import android.os.Build
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.view.View
-import android.widget.Button
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.newvitalgest01.R
 import com.example.newvitalgest01.databinding.ActivityMeusAgendamentosBinding
-import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import android.view.animation.AnimationUtils
-
+import com.google.firebase.firestore.Query
 
 class MeusAgendamentosActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMeusAgendamentosBinding
-
-    private val listaCompleta = mutableListOf<AgendamentoItem>()
-    private val listaFiltrada = mutableListOf<AgendamentoItem>()
-    private lateinit var adapter: AgendamentoAdapter
-
     private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
     private val firestore: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
 
-    private val hemocentros = mapOf(
-        "HEMOPE Recife" to mapOf(
-            "endereco" to "Rua Joaquim Nabuco, 171 - Graças",
-            "telefone" to "(81) 3416-4800"
-        ),
-        "Hospital das Clínicas" to mapOf(
-            "endereco" to "Av. Prof. Moraes Rego, 1235 - Cidade Universitária",
-            "telefone" to "(81) 2126-3600"
-        ),
-        "IMIP" to mapOf(
-            "endereco" to "Rua dos Coelhos, 300 - Boa Vista",
-            "telefone" to "(81) 2122-4700"
-        )
-    )
+    private val listaAgendamentos = mutableListOf<AgendamentoItem>()
+    private lateinit var adapter: MeusAgendamentosAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMeusAgendamentosBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // 🔹 Remove ActionBar (faixa azul de cima)
         supportActionBar?.hide()
 
-        configurarRecycler()
-        configurarFiltro()
-        configurarBotoes()
-        carregarAgendamentosDoFirebase()
-    }
+        // 🔹 Deixa status bar e navigation bar na cor do fundo
+        window.statusBarColor = ContextCompat.getColor(this, R.color.fundo_claro)
+        window.navigationBarColor = ContextCompat.getColor(this, R.color.fundo_claro)
 
-    private fun configurarRecycler() {
-        adapter = AgendamentoAdapter(listaFiltrada) { item, position ->
-            mostrarDialogoCancelar(item, position)
+        // 🔹 Ícones escuros na status bar (modo claro)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            window.insetsController?.setSystemBarsAppearance(
+                android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
+                android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
+            )
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            @Suppress("DEPRECATION")
+            window.decorView.systemUiVisibility =
+                window.decorView.systemUiVisibility or android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         }
-        binding.recyclerAgendamentos.layoutManager = LinearLayoutManager(this)
-        binding.recyclerAgendamentos.adapter = adapter
+
+        setupRecycler()
+        setupButtons()
     }
 
-    private fun configurarFiltro() {
-        binding.edtFiltroAgendamentos.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun afterTextChanged(s: Editable?) {}
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                filtrarAgendamentos(s?.toString() ?: "")
-            }
-        })
+    override fun onResume() {
+        super.onResume()
+        carregarAgendamentos()
     }
 
-    private fun configurarBotoes() {
-        binding.btnVoltarMeusAgendamentos.setOnClickListener {
+    private fun setupRecycler() {
+        adapter = MeusAgendamentosAdapter(this, listaAgendamentos)
+        binding.recyclerMeusAgendamentos.layoutManager = LinearLayoutManager(this)
+        binding.recyclerMeusAgendamentos.adapter = adapter
+    }
+
+    private fun setupButtons() {
+        binding.btnVoltar.setOnClickListener {
             finish()
         }
     }
 
-    private fun filtrarAgendamentos(texto: String) {
-        val consulta = texto.lowercase().trim()
-
-        listaFiltrada.clear()
-
-        if (consulta.isEmpty()) {
-            listaFiltrada.addAll(listaCompleta)
-        } else {
-            listaFiltrada.addAll(
-                listaCompleta.filter { item ->
-                    item.hemocentro.lowercase().contains(consulta) ||
-                            item.data.lowercase().contains(consulta) ||
-                            item.hora.lowercase().contains(consulta)
-                }
-            )
+    private fun carregarAgendamentos() {
+        val usuario = auth.currentUser
+        if (usuario == null) {
+            binding.txtMensagemVazio.text = "Você precisa estar logado para ver seus agendamentos."
+            binding.txtMensagemVazio.visibility = android.view.View.VISIBLE
+            binding.recyclerMeusAgendamentos.visibility = android.view.View.GONE
+            return
         }
 
-        adapter.notifyDataSetChanged()
-    }
-
-    private fun carregarAgendamentosDoFirebase() {
-        val user = auth.currentUser ?: return
-
         firestore.collection("usuarios")
-            .document(user.uid)
+            .document(usuario.uid)
             .collection("agendamentos")
-            .orderBy("data")
-            .orderBy("hora")
+            .orderBy("criadoEm", Query.Direction.DESCENDING)
             .get()
-            .addOnSuccessListener { docs ->
-                listaCompleta.clear()
+            .addOnSuccessListener { snapshot ->
+                listaAgendamentos.clear()
 
-                for (doc in docs) {
-                    val id = doc.id
-                    val hemocentro = doc.getString("hemocentro") ?: ""
-                    val data = doc.getString("data") ?: ""
-                    val hora = doc.getString("hora") ?: ""
-                    val status = doc.getString("status") ?: "Agendado"
+                if (snapshot.isEmpty) {
+                    binding.txtMensagemVazio.text = "Você ainda não possui agendamentos."
+                    binding.txtMensagemVazio.visibility = android.view.View.VISIBLE
+                    binding.recyclerMeusAgendamentos.visibility = android.view.View.GONE
+                } else {
+                    for (doc in snapshot.documents) {
+                        val id = doc.id
+                        val hemocentro = doc.getString("hemocentro") ?: "Hemocentro"
+                        val data = doc.getString("data") ?: ""
+                        val hora = doc.getString("hora") ?: ""
+                        val endereco = doc.getString("endereco") ?: ""
+                        val telefone = doc.getString("telefone") ?: ""
+                        val status = doc.getString("status") ?: "Pendente"
 
-                    val info = hemocentros[hemocentro]
-                    val endereco = info?.get("endereco") ?: ""
-                    val telefone = info?.get("telefone") ?: ""
-
-                    listaCompleta.add(
-                        AgendamentoItem(
+                        val item = AgendamentoItem(
                             id = id,
                             hemocentro = hemocentro,
                             data = data,
@@ -135,95 +108,62 @@ class MeusAgendamentosActivity : AppCompatActivity() {
                             telefone = telefone,
                             status = status
                         )
-                    )
+                        listaAgendamentos.add(item)
+                    }
+
+                    binding.txtMensagemVazio.visibility = android.view.View.GONE
+                    binding.recyclerMeusAgendamentos.visibility = android.view.View.VISIBLE
                 }
 
-                listaFiltrada.clear()
-                listaFiltrada.addAll(listaCompleta)
-                adapter.notifyDataSetChanged()
+                adapter.atualizarLista(listaAgendamentos)
+            }
+            .addOnFailureListener {
+                binding.txtMensagemVazio.text = "Erro ao carregar agendamentos."
+                binding.txtMensagemVazio.visibility = android.view.View.VISIBLE
+                binding.recyclerMeusAgendamentos.visibility = android.view.View.GONE
             }
     }
 
-    // ---------------- CANCELAMENTO ----------------
-
-    private fun mostrarDialogoCancelar(item: AgendamentoItem, position: Int) {
-        val dialogView = layoutInflater.inflate(R.layout.dialog_confirm_cancel, null)
-
-        val txtMensagem = dialogView.findViewById<TextView>(R.id.txtMensagemConfirmacao)
-        val btnNao = dialogView.findViewById<Button>(R.id.btnNaoCancelar)
-        val btnSim = dialogView.findViewById<Button>(R.id.btnSimCancelar)
-
-        txtMensagem.text =
-            "Tem certeza que deseja cancelar a doação no hemocentro \"${item.hemocentro}\" no dia ${item.data} às ${item.hora}?"
-
-        val dialog = AlertDialog.Builder(this)
-            .setView(dialogView)
-            .setCancelable(false)
+    /**
+     * Mostra um diálogo genérico de erro ou aviso.
+     */
+    private fun mostrarDialogAvisoGenerico(title: String, message: String) {
+        val dialog = MaterialAlertDialogBuilder(this, R.style.CustomAlertDialogTheme)
+            .setTitle(title)
+            .setMessage(message)
+            .setPositiveButton("OK", null)
             .create()
 
-        // Fundo da janela transparente (sem quadrado branco)
-        dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)
-
-        btnNao.setOnClickListener {
-            dialog.dismiss()
-        }
-
-        btnSim.setOnClickListener {
-            dialog.dismiss()
-            cancelarAgendamento(item, position)
+        dialog.setOnShowListener {
+            estilizarBotoesDialog(dialog, isDestructive = false)
         }
 
         dialog.show()
-
-        // Animação de entrada (fade + zoom leve)
-        val anim = AnimationUtils.loadAnimation(this, R.anim.dialog_enter)
-        dialogView.startAnimation(anim)
     }
 
+    /**
+     * Atualiza estilo de botões nos diálogos (padrão do app).
+     */
+    private fun estilizarBotoesDialog(dialog: AlertDialog, isDestructive: Boolean) {
+        val primaryColor = ContextCompat.getColor(this, R.color.vermelho_primario)
+        val white = ContextCompat.getColor(this, android.R.color.white)
 
-    private fun cancelarAgendamento(item: AgendamentoItem, position: Int) {
-        val user = auth.currentUser
-        if (user == null) {
-            Toast.makeText(this, "Usuário não autenticado.", Toast.LENGTH_LONG).show()
-            return
+        val botaoPositivo = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+        val botaoNegativo = dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+
+        botaoPositivo?.apply {
+            setBackgroundColor(primaryColor)
+            setTextColor(white)
+            textSize = 14f
+            isAllCaps = false
+            setPadding(40, 10, 40, 10)
         }
 
-        // 🔹 1) Atualiza a UI imediatamente (remoção otimista)
-        listaCompleta.removeAll { it.id == item.id }
-
-        val indexNaFiltrada = listaFiltrada.indexOfFirst { it.id == item.id }
-        if (indexNaFiltrada != -1) {
-            listaFiltrada.removeAt(indexNaFiltrada)
-            adapter.notifyItemRemoved(indexNaFiltrada)
-        } else {
-            // fallback, se algo sair do esperado
-            val textoFiltro = binding.edtFiltroAgendamentos.text?.toString() ?: ""
-            filtrarAgendamentos(textoFiltro)
+        botaoNegativo?.apply {
+            setBackgroundColor(android.graphics.Color.TRANSPARENT)
+            setTextColor(primaryColor)
+            textSize = 14f
+            isAllCaps = false
         }
-
-        // 🔹 2) Chama o Firestore para realmente apagar
-        firestore.collection("usuarios")
-            .document(user.uid)
-            .collection("agendamentos")
-            .document(item.id)
-            .delete()
-            .addOnSuccessListener {
-                // Mensagem mais bonita usando Snackbar
-                val snackbar = Snackbar.make(
-                    binding.root,
-                    "Doação cancelada com sucesso.",
-                    Snackbar.LENGTH_LONG
-                )
-                snackbar.show()
-            }
-            .addOnFailureListener {
-                // Se falhar, avisa o usuário e recarrega a lista para corrigir
-                Toast.makeText(
-                    this,
-                    "Erro ao cancelar agendamento. Atualizando lista...",
-                    Toast.LENGTH_LONG
-                ).show()
-                carregarAgendamentosDoFirebase()
-            }
     }
 }

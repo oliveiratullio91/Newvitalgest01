@@ -17,6 +17,7 @@
         android:gravity="center"
         android:layout_marginBottom="12dp" />
 
+    <!-- RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerHistoricoDoacoes"
         android:layout_width="match_parent"
@@ -24,6 +25,21 @@
         android:layout_weight="1"
         android:paddingBottom="12dp" />
 
+    <!-- Mensagem de histórico vazio -->
+    <TextView
+        android:id="@+id/txtSemDoacoes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Você ainda não realizou nenhuma doação ❤️"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@color/black"
+        android:gravity="center"
+        android:visibility="gone"
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="20dp" />
+
+    <!-- Botão voltar -->
     <Button
         android:id="@+id/btnVoltar"
         android:layout_width="match_parent"

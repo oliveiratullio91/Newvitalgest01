@@ -1,8 +1,10 @@
 package com.example.newvitalgest01.view
 
+import android.os.Build
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.newvitalgest01.R
@@ -17,12 +19,23 @@ class HemocentrosProximosActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_hemocentros_proximos)
 
-        // Configura o ActionBar com o botão de voltar (seta no topo)
-        supportActionBar?.apply {
-            title = "Hemocentros Próximos"
-            setDisplayHomeAsUpEnabled(true)
-            setHomeAsUpIndicator(R.drawable.ic_arrow_back) // ícone personalizado
-            elevation = 8f // leve sombra
+        // 🔹 Remove completamente a ActionBar (tira a faixa azul superior)
+        supportActionBar?.hide()
+
+        // 🔹 Define cores da status bar e navigation bar para combinar com o fundo
+        window.statusBarColor = ContextCompat.getColor(this, R.color.fundo_claro)
+        window.navigationBarColor = ContextCompat.getColor(this, R.color.fundo_claro)
+
+        // 🔹 Ícones escuros (modo claro)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            window.insetsController?.setSystemBarsAppearance(
+                android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
+                android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS
+            )
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            @Suppress("DEPRECATION")
+            window.decorView.systemUiVisibility =
+                window.decorView.systemUiVisibility or android.view.View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         }
 
         recyclerView = findViewById(R.id.recyclerHemocentros)
@@ -53,12 +66,6 @@ class HemocentrosProximosActivity : AppCompatActivity() {
         btnVoltar.setOnClickListener {
             finish()
         }
-    }
-
-    // Ação do botão de voltar da ActionBar (seta)
-    override fun onSupportNavigateUp(): Boolean {
-        onBackPressedDispatcher.onBackPressed()
-        return true
     }
 }
 

@@ -68,6 +68,8 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore-ktx")
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
+    implementation("com.google.android.gms:play-services-auth:21.4.0")
+    implementation("com.google.firebase:firebase-auth:24.0.1")
 
     // --- Testes (padrão do template) ---
     testImplementation("junit:junit:4.13.2")

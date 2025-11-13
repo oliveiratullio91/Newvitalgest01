@@ -6,6 +6,13 @@
     <string name="next">Next</string>
     <string name="previous">Previous</string>
 
+        <!-- ID do cliente Web usado pelo Google Sign-In -->
+    <string name="default_web_client_id">
+        197185794471-ja5qnvtho2g5n2u2k8r86ls5vjn96ajr.apps.googleusercontent.com
+    </string>
+
+
+
     <string name="lorem_ipsum">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris
         volutpat, dolor id interdum ullamcorper, risus dolor egestas lectus, sit amet mattis purus

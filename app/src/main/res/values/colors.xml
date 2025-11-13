@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Paleta padrão existente -->
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
@@ -21,5 +22,21 @@
     <color name="cinza_texto">#666666</color>
     <color name="cinza_borda">#e2e8f0</color>
     <color name="verde_sucesso">#15803d</color>
-    <color name="azul_info">#1e293b</color>
+    <color name="verde_confirmado">#2E7D32</color>
+    <color name="preto">#000000</color>
+    <color name="cinza_hint">#99000000</color>
+    <color name="azul_primario">#1976D2</color>
+    <color name="branco">#FFFFFFFF</color>
+
+    <!-- Cores do chip -->
+    <color name="cinza_claro_chip">#F2F2F2</color>
+    <color name="cinza_borda_chip">#D0D0D0</color>
+
+    <!-- 🎨 Cores adicionadas para corrigir e modernizar -->
+    <color name="azul_info">#1565C0</color> <!-- azul primário para textos e títulos -->
+    <color name="azul_claro">#42A5F5</color> <!-- variação para botões secundários -->
+    <color name="azul_escuro">#0D47A1</color> <!-- para destaques fortes -->
+    <color name="azul_hover">#1976D2</color> <!-- para efeito de hover em botões -->
+    <color name="fundo_azul_claro">#E3F2FD</color> <!-- fundos suaves de info -->
+    <color name="vermelho_primario_escuro">#D50000</color>
 </resources>
