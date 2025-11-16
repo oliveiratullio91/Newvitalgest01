@@ -14,7 +14,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 
-class MeusAgendamentosActivity : AppCompatActivity() {
+class MeusAgendamentosActivity : BaseActivity() {
 
     private lateinit var binding: ActivityMeusAgendamentosBinding
     private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/rootAgendamento"
@@ -34,11 +35,10 @@
                 android:textSize="22sp"
                 android:textStyle="bold"
                 android:textColor="@android:color/black"
-                android:fontFamily="sans-serif-medium"
                 android:gravity="center_horizontal"
                 android:paddingBottom="12dp" />
 
-            <!-- Seção Data -->
+            <!-- Seleção de data -->
             <TextView
                 android:id="@+id/txtLabelData"
                 android:layout_width="match_parent"
@@ -47,7 +47,6 @@
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@android:color/black"
-                android:fontFamily="sans-serif-medium"
                 android:paddingTop="8dp"
                 android:paddingBottom="4dp" />
 
@@ -58,11 +57,9 @@
                 android:calendarViewShown="false"
                 android:spinnersShown="true"
                 android:datePickerMode="spinner"
-                android:background="@android:color/white"
-                android:theme="@style/CustomDatePickerRed"
-                app:backgroundTint="@android:color/white" />
+                android:theme="@style/CustomDatePickerRed" />
 
-            <!-- Seção Hora -->
+            <!-- Seleção de hora -->
             <TextView
                 android:id="@+id/txtLabelHora"
                 android:layout_width="match_parent"
@@ -71,7 +68,6 @@
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@android:color/black"
-                android:fontFamily="sans-serif-medium"
                 android:paddingTop="16dp"
                 android:paddingBottom="4dp" />
 
@@ -80,148 +76,212 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:timePickerMode="spinner"
-                android:background="@android:color/white"
-                android:theme="@style/CustomTimePickerRed"
-                app:backgroundTint="@android:color/white" />
+                android:theme="@style/CustomTimePickerRed" />
 
-            <!-- Seção Hemocentros -->
+            <!-- Filtros de Hemocentro -->
             <TextView
-                android:id="@+id/txtLabelHemocentros"
+                android:id="@+id/txtLabelHemocentro"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Selecione um hemocentro:"
+                android:text="Escolha o hemocentro:"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@android:color/black"
-                android:fontFamily="sans-serif-medium"
                 android:paddingTop="16dp"
-                android:paddingBottom="8dp" />
+                android:paddingBottom="4dp" />
 
-            <!-- HEMOPE -->
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardFiltrosHemocentro"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:background="@android:color/white"
-                android:padding="12dp"
-                android:layout_marginBottom="8dp">
+                android:layout_marginTop="4dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp"
+                android:backgroundTint="@android:color/white">
 
-                <CheckBox
-                    android:id="@+id/hemopeCheckbox"
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    app:buttonTint="@color/vermelho_primario" />
+                    android:orientation="vertical"
+                    android:padding="12dp">
 
-                <TextView
-                    android:id="@+id/txtInfoHemope"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="HEMOPE Recife"
-                    android:textSize="14sp"
-                    android:textColor="@android:color/black"
-                    android:fontFamily="sans-serif"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="4dp" />
-            </LinearLayout>
+                    <TextView
+                        android:id="@+id/txtLabelRegiao"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Região"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/black"
+                        android:paddingBottom="2dp" />
 
-            <!-- HC -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:background="@android:color/white"
-                android:padding="12dp"
-                android:layout_marginBottom="8dp">
+                    <Spinner
+                        android:id="@+id/spinnerRegiao"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/white"
+                        android:popupBackground="@android:color/white" />
 
-                <CheckBox
-                    android:id="@+id/hcCheckbox"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:buttonTint="@color/vermelho_primario" />
+                    <TextView
+                        android:id="@+id/txtLabelUf"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Estado (UF)"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/black"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="2dp" />
 
-                <TextView
-                    android:id="@+id/txtInfoHc"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Hospital das Clínicas"
-                    android:textSize="14sp"
-                    android:textColor="@android:color/black"
-                    android:fontFamily="sans-serif"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="4dp" />
-            </LinearLayout>
+                    <Spinner
+                        android:id="@+id/spinnerUf"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/white"
+                        android:popupBackground="@android:color/white" />
 
-            <!-- IMIP -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:background="@android:color/white"
-                android:padding="12dp"
-                android:layout_marginBottom="8dp">
+                    <TextView
+                        android:id="@+id/txtLabelCidade"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Cidade"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/black"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="2dp" />
 
-                <CheckBox
-                    android:id="@+id/imipCheckbox"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:buttonTint="@color/vermelho_primario" />
+                    <Spinner
+                        android:id="@+id/spinnerCidade"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/white"
+                        android:popupBackground="@android:color/white" />
 
-                <TextView
-                    android:id="@+id/txtInfoImip"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="IMIP"
-                    android:textSize="14sp"
-                    android:textColor="@android:color/black"
-                    android:fontFamily="sans-serif"
-                    android:paddingStart="8dp"
-                    android:paddingEnd="4dp" />
-            </LinearLayout>
+                    <TextView
+                        android:id="@+id/txtLabelHemocentroInterno"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Hemocentro"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@android:color/black"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="2dp" />
 
-            <!-- Espaço -->
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="16dp" />
+                    <Spinner
+                        android:id="@+id/spinnerHemocentro"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@android:color/white"
+                        android:popupBackground="@android:color/white" />
+
+                    <!-- CARD DE INFORMAÇÕES DO HEMOCENTRO -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/cardHemocentroInfo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        app:cardElevation="4dp"
+                        app:cardCornerRadius="16dp"
+                        android:padding="16dp"
+                        android:visibility="gone"
+                        app:cardBackgroundColor="@android:color/white">
+
+                        <LinearLayout
+                            android:orientation="vertical"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <!-- Nome -->
+                            <TextView
+                                android:id="@+id/txtNomeHemo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Nome da Unidade"
+                                android:textStyle="bold"
+                                android:textSize="18sp"
+                                android:textColor="@android:color/black"
+                                android:layout_marginBottom="6dp"/>
+
+                            <!-- Endereço -->
+                            <TextView
+                                android:id="@+id/txtEnderecoHemo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Endereço"
+                                android:textColor="@color/cinza_texto"
+                                android:layout_marginBottom="4dp"/>
+
+                            <!-- Telefone -->
+                            <TextView
+                                android:id="@+id/txtTelefoneHemo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Telefone"
+                                android:textColor="@color/cinza_texto"
+                                android:layout_marginBottom="4dp"/>
+
+                            <!-- Horário -->
+                            <TextView
+                                android:id="@+id/txtHorarioHemo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Horário de funcionamento"
+                                android:textColor="@color/cinza_texto"
+                                android:layout_marginBottom="4dp"/>
+
+                            <!-- Status -->
+                            <TextView
+                                android:id="@+id/txtStatusHemo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Status"
+                                android:textColor="@color/cinza_texto"
+                                android:layout_marginBottom="4dp"/>
+
+                            <!-- Distância -->
+                            <TextView
+                                android:id="@+id/txtDistanciaHemo"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Distância"
+                                android:textColor="@color/cinza_texto"
+                                android:layout_marginBottom="8dp"/>
+
+                        </LinearLayout>
+
+                    </com.google.android.material.card.MaterialCardView>
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
             <!-- Botão Agendar -->
             <Button
                 android:id="@+id/btAgendar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="✅ Confirmar Agendamento"
+                android:text="Confirmar Agendamento"
                 android:textAllCaps="false"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:textColor="@android:color/white"
-                android:fontFamily="sans-serif-medium"
                 android:backgroundTint="@color/vermelho_primario"
-                android:padding="16dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp" />
+                android:paddingVertical="12dp"
+                android:layout_marginTop="16dp" />
 
-            <!-- Botão Voltar para Serviços -->
+            <!-- Botão Voltar -->
             <Button
                 android:id="@+id/btVoltarServicos"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="↩️ Voltar para Serviços"
+                android:text="Voltar"
                 android:textAllCaps="false"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/white"
-                android:fontFamily="sans-serif-medium"
-                android:backgroundTint="@color/vermelho_primario"
-                android:padding="16dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp" />
+                android:textSize="15sp"
+                android:textColor="@color/vermelho_primario"
+                android:backgroundTint="@android:color/transparent"
+                android:paddingVertical="10dp"
+                android:layout_marginTop="8dp" />
 
         </LinearLayout>
     </ScrollView>

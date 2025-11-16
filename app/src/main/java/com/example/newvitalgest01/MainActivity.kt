@@ -5,15 +5,14 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import android.os.Bundle
 import android.view.View
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.widget.addTextChangedListener
+import com.example.newvitalgest01.view.BaseActivity
 import com.example.newvitalgest01.databinding.ActivityMainBinding
 import com.example.newvitalgest01.view.CadastroActivity
 import com.example.newvitalgest01.view.Home
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseAuthException
+import androidx.core.widget.addTextChangedListener   // ✅ IMPORT QUE FALTAVA
 
 // IMPORTS GOOGLE
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -22,7 +21,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.GoogleAuthProvider
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : BaseActivity() {   // 🔹 Agora herdando de BaseActivity
 
     private lateinit var binding: ActivityMainBinding
     private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
@@ -39,7 +38,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         binding = ActivityMainBinding.inflate(layoutInflater)
-        enableEdgeToEdge()
         setContentView(binding.root)
 
         // Esconde a ActionBar para uma tela de login mais clean

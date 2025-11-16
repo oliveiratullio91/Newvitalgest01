@@ -15,24 +15,60 @@
         android:padding="14dp"
         android:background="@color/fundo_claro">
 
-        <TextView
-            android:id="@+id/txtNomeHemocentro"
+        <!-- Linha: Nome + Badge de Status -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="HEMOPE Recife"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/black" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
 
+            <TextView
+                android:id="@+id/txtNomeHemocentro"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="HEMOPE Recife"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black" />
+
+            <TextView
+                android:id="@+id/txtStatusHemocentro"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:paddingLeft="10dp"
+                android:paddingRight="10dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:text="ATIVO"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                android:background="@drawable/bg_status_badge" />
+        </LinearLayout>
+
+        <!-- Endereço -->
         <TextView
             android:id="@+id/txtEnderecoHemocentro"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:text="Rua Joaquim Nabuco, 171 - Derby"
+            android:text="Rua Joaquim Nabuco, 171"
             android:textSize="14sp"
             android:textColor="@android:color/darker_gray" />
 
+        <!-- Cidade / UF -->
+        <TextView
+            android:id="@+id/txtCidadeUfHemocentro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:text="Recife - PE"
+            android:textSize="14sp"
+            android:textColor="@android:color/darker_gray" />
+
+        <!-- Telefone -->
         <TextView
             android:id="@+id/txtTelefoneHemocentro"
             android:layout_width="match_parent"
@@ -42,6 +78,7 @@
             android:textSize="14sp"
             android:textColor="@android:color/darker_gray" />
 
+        <!-- Botões de ação -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

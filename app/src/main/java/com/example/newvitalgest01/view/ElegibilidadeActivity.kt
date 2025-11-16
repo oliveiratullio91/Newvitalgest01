@@ -15,7 +15,7 @@ import com.example.newvitalgest01.R
 import com.example.newvitalgest01.databinding.ActivityElegibilidadeBinding
 import com.google.android.material.snackbar.Snackbar
 
-class ElegibilidadeActivity : AppCompatActivity() {
+class ElegibilidadeActivity : BaseActivity() {
 
     private lateinit var binding: ActivityElegibilidadeBinding
     private val respostas = mutableMapOf<Int, Boolean>() // chave = nº da pergunta (1..22), valor = true = "Sim"

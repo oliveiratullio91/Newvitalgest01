@@ -20,7 +20,7 @@ import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 
-class CadastroActivity : AppCompatActivity() {
+class CadastroActivity : BaseActivity() {
 
     private lateinit var binding: ActivityCadastroBinding
     private val handler = Handler(Looper.getMainLooper())

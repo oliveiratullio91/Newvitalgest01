@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.newvitalgest01.R
 
-class HistoricoDoacoesActivity : AppCompatActivity() {
+class HistoricoDoacoesActivity : BaseActivity() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var txtSemDoacoes: TextView
