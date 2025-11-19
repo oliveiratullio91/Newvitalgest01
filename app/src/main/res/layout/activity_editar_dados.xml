@@ -1,0 +1,287 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fundo_claro">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:gravity="center_horizontal">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Editar meus dados"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/vermelho_primario"
+            android:gravity="center_horizontal"
+            android:layout_marginBottom="16dp" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="4dp"
+            app:cardUseCompatPadding="true"
+            android:backgroundTint="@android:color/white"
+            android:layout_marginBottom="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Nome completo -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Nome completo"
+                    android:textSize="12sp"
+                    android:textColor="@color/cinza_texto" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:boxBackgroundMode="none"
+                    android:layout_marginBottom="8dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editNomeCompleto"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Digite seu nome completo"
+                        android:inputType="textCapWords"
+                        android:maxLines="1"
+                        android:paddingVertical="8dp"
+                        android:paddingHorizontal="12dp"
+                        android:textColor="@android:color/black"
+                        android:textColorHint="@color/cinza_texto" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Data de nascimento -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Data de nascimento"
+                    android:textSize="12sp"
+                    android:textColor="@color/cinza_texto" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:boxBackgroundMode="none"
+                    android:layout_marginBottom="8dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editDataNascimento"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="dd/mm/aaaa"
+                        android:inputType="date"
+                        android:maxLines="1"
+                        android:paddingVertical="8dp"
+                        android:paddingHorizontal="12dp"
+                        android:textColor="@android:color/black"
+                        android:textColorHint="@color/cinza_texto" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Sexo -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Sexo"
+                    android:textSize="12sp"
+                    android:textColor="@color/cinza_texto" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:boxBackgroundMode="none"
+                    android:layout_marginBottom="8dp">
+
+                    <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                        android:id="@+id/editSexo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Selecione seu sexo"
+                        android:inputType="none"
+                        android:maxLines="1"
+                        android:paddingVertical="8dp"
+                        android:paddingHorizontal="12dp"
+                        android:textColor="@android:color/black"
+                        android:textColorHint="@color/cinza_texto" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Telefone -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Telefone"
+                    android:textSize="12sp"
+                    android:textColor="@color/cinza_texto" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:boxBackgroundMode="none"
+                    android:layout_marginBottom="8dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editTelefone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Digite seu telefone"
+                        android:inputType="phone"
+                        android:maxLines="1"
+                        android:paddingVertical="8dp"
+                        android:paddingHorizontal="12dp"
+                        android:textColor="@android:color/black"
+                        android:textColorHint="@color/cinza_texto" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Peso -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Peso (kg)"
+                    android:textSize="12sp"
+                    android:textColor="@color/cinza_texto" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:boxBackgroundMode="none"
+                    android:layout_marginBottom="8dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editPeso"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Ex: 72"
+                        android:inputType="numberDecimal"
+                        android:maxLines="1"
+                        android:paddingVertical="8dp"
+                        android:paddingHorizontal="12dp"
+                        android:textColor="@android:color/black"
+                        android:textColorHint="@color/cinza_texto" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Cidade -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Cidade"
+                    android:textSize="12sp"
+                    android:textColor="@color/cinza_texto" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:boxBackgroundMode="none"
+                    android:layout_marginBottom="8dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editCidade"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Digite sua cidade"
+                        android:inputType="textCapWords"
+                        android:maxLines="1"
+                        android:paddingVertical="8dp"
+                        android:paddingHorizontal="12dp"
+                        android:textColor="@android:color/black"
+                        android:textColorHint="@color/cinza_texto" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Estado -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Estado (UF)"
+                    android:textSize="12sp"
+                    android:textColor="@color/cinza_texto" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:boxBackgroundMode="none"
+                    android:layout_marginBottom="8dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editEstado"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Ex: PE"
+                        android:inputType="textCapCharacters"
+                        android:maxLines="1"
+                        android:paddingVertical="8dp"
+                        android:paddingHorizontal="12dp"
+                        android:textColor="@android:color/black"
+                        android:textColorHint="@color/cinza_texto" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- Tipo sanguíneo -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Tipo sanguíneo"
+                    android:textSize="12sp"
+                    android:textColor="@color/cinza_texto" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:boxBackgroundMode="none"
+                    android:layout_marginBottom="8dp">
+
+                    <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                        android:id="@+id/editTipoSanguineo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Selecione seu tipo sanguíneo"
+                        android:inputType="none"
+                        android:maxLines="1"
+                        android:paddingVertical="8dp"
+                        android:paddingHorizontal="12dp"
+                        android:textColor="@android:color/black"
+                        android:textColorHint="@color/cinza_texto" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSalvarDados"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Salvar"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:backgroundTint="@color/vermelho_primario"
+            android:textColor="@android:color/white"
+            android:paddingVertical="12dp"
+            app:cornerRadius="18dp"
+            android:layout_marginBottom="8dp" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCancelarEdicao"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Cancelar"
+            android:textAllCaps="false"
+            android:textSize="15sp"
+            android:backgroundTint="@android:color/white"
+            android:textColor="@color/vermelho_primario"
+            android:paddingVertical="10dp"
+            app:cornerRadius="18dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/vermelho_primario" />
+
+    </LinearLayout>
+</ScrollView>

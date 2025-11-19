@@ -7,9 +7,11 @@
     android:layout_marginEnd="16dp"
     android:layout_marginTop="8dp"
     android:layout_marginBottom="8dp"
+
+    app:cardBackgroundColor="@android:color/white"
     app:cardCornerRadius="16dp"
     app:cardElevation="4dp"
-    android:foreground="?attr/selectableItemBackground">
+    app:cardUseCompatPadding="true">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -61,7 +63,7 @@
                 android:layout_height="wrap_content"
                 android:text="📅 00/00/0000 às 00:00"
                 android:textSize="14sp"
-                android:textColor="@color/black"
+                android:textColor="@android:color/black"
                 android:layout_marginTop="6dp" />
 
             <TextView
@@ -70,7 +72,7 @@
                 android:layout_height="wrap_content"
                 android:text="📍 Endereço do hemocentro"
                 android:textSize="13sp"
-                android:textColor="@color/black"
+                android:textColor="@android:color/black"
                 android:layout_marginTop="4dp" />
 
             <TextView
@@ -79,12 +81,11 @@
                 android:layout_height="wrap_content"
                 android:text="☎ Telefone"
                 android:textSize="13sp"
-                android:textColor="@color/black"
+                android:textColor="@android:color/black"
                 android:layout_marginTop="2dp"
                 android:layout_marginBottom="8dp" />
         </LinearLayout>
 
-        <!-- Botão cancelar -->
         <Button
             android:id="@+id/btnCancelarAgendamento"
             android:layout_width="wrap_content"
@@ -102,4 +103,5 @@
             android:layout_gravity="end|bottom"
             android:elevation="2dp" />
     </RelativeLayout>
+
 </androidx.cardview.widget.CardView>

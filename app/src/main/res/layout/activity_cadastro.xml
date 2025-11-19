@@ -188,6 +188,171 @@
                         android:textColorHint="@color/cinza_texto" />
                 </com.google.android.material.textfield.TextInputLayout>
 
+                <!-- DATA DE NASCIMENTO -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Data de nascimento"
+                    android:textColor="@android:color/black"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="4dp" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:boxBackgroundMode="none"
+                    app:boxStrokeWidth="1dp"
+                    app:boxStrokeColor="@color/vermelho_primario"
+                    app:hintEnabled="false"
+                    android:layout_marginBottom="10dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editDataNascimento"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="dd/mm/aaaa"
+                        android:inputType="date"
+                        android:maxLines="1"
+                        android:paddingVertical="10dp"
+                        android:paddingHorizontal="16dp"
+                        android:background="@android:color/transparent"
+                        android:textColor="@android:color/black"
+                        android:textColorHint="@color/cinza_texto" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- SEXO -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Sexo"
+                    android:textColor="@android:color/black"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="4dp" />
+
+                <RadioGroup
+                    android:id="@+id/groupSexo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="10dp">
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/radioSexoMasculino"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Homem"
+                        android:textColor="@android:color/black" />
+
+                    <com.google.android.material.radiobutton.MaterialRadioButton
+                        android:id="@+id/radioSexoFeminino"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Mulher"
+                        android:textColor="@android:color/black"
+                        android:layout_marginStart="16dp" />
+                </RadioGroup>
+
+                <!-- PESO -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Peso (kg)"
+                    android:textColor="@android:color/black"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="4dp" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:boxBackgroundMode="none"
+                    app:boxStrokeWidth="1dp"
+                    app:boxStrokeColor="@color/vermelho_primario"
+                    app:hintEnabled="false"
+                    android:layout_marginBottom="10dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editPeso"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Seu peso em kg"
+                        android:inputType="numberDecimal"
+                        android:maxLines="1"
+                        android:paddingVertical="10dp"
+                        android:paddingHorizontal="16dp"
+                        android:background="@android:color/transparent"
+                        android:textColor="@android:color/black"
+                        android:textColorHint="@color/cinza_texto" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- CIDADE -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Cidade"
+                    android:textColor="@android:color/black"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="4dp" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:boxBackgroundMode="none"
+                    app:boxStrokeWidth="1dp"
+                    app:boxStrokeColor="@color/vermelho_primario"
+                    app:hintEnabled="false"
+                    android:layout_marginBottom="10dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editCidade"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Digite sua cidade"
+                        android:inputType="textCapWords"
+                        android:maxLines="1"
+                        android:paddingVertical="10dp"
+                        android:paddingHorizontal="16dp"
+                        android:background="@android:color/transparent"
+                        android:textColor="@android:color/black"
+                        android:textColorHint="@color/cinza_texto" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!-- ESTADO -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Estado (UF)"
+                    android:textColor="@android:color/black"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:layout_marginBottom="4dp" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:boxBackgroundMode="none"
+                    app:boxStrokeWidth="1dp"
+                    app:boxStrokeColor="@color/vermelho_primario"
+                    app:hintEnabled="false"
+                    android:layout_marginBottom="16dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editEstado"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="UF (ex: PE)"
+                        android:inputType="textCapCharacters"
+                        android:maxLines="1"
+                        android:paddingVertical="10dp"
+                        android:paddingHorizontal="16dp"
+                        android:background="@android:color/transparent"
+                        android:textColor="@android:color/black"
+                        android:textColorHint="@color/cinza_texto" />
+                </com.google.android.material.textfield.TextInputLayout>
+
                 <!-- DIVISOR -->
                 <View
                     android:layout_width="match_parent"
@@ -277,7 +442,68 @@
                         android:textColorHint="@color/cinza_texto" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- BOTÕES -->
+                <!-- DIVISOR -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/fundo_claro"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- SEÇÃO: PREFERÊNCIAS E PRIVACIDADE -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="PREFERÊNCIAS E PRIVACIDADE"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:textAllCaps="true"
+                    android:textColor="@color/cinza_texto"
+                    android:fontFamily="sans-serif-medium"
+                    android:layout_marginBottom="12dp" />
+
+                <com.google.android.material.checkbox.MaterialCheckBox
+                    android:id="@+id/checkboxJaDoou"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Já doei sangue antes"
+                    android:textColor="@android:color/black"
+                    android:layout_marginBottom="4dp" />
+
+                <com.google.android.material.checkbox.MaterialCheckBox
+                    android:id="@+id/checkboxAceitaLembretes"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Aceito receber lembretes de doação"
+                    android:textColor="@android:color/black"
+                    android:layout_marginBottom="4dp" />
+
+                <com.google.android.material.checkbox.MaterialCheckBox
+                    android:id="@+id/checkboxAceitaTermos"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Li e concordo com os termos de uso e LGPD"
+                    android:textColor="@android:color/black"
+                    android:layout_marginBottom="8dp" />
+
+                <!-- BOTÃO PARA LER TERMOS DE USO E LGPD -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btVerTermos"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Ler Termos de Uso e LGPD"
+                    android:textAllCaps="false"
+                    android:textColor="@color/vermelho_primario"
+                    android:textSize="14sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:paddingVertical="10dp"
+                    android:backgroundTint="@android:color/white"
+                    app:cornerRadius="16dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/vermelho_primario"
+                    app:elevation="0dp"
+                    android:layout_marginBottom="16dp" />
+
+                <!-- BOTÕES PRINCIPAIS -->
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btCadastrar"
                     android:layout_width="match_parent"

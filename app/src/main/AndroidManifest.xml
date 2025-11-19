@@ -66,6 +66,19 @@
             android:exported="false"
             android:theme="@style/Theme.Newvitalgest01" />
 
+        <activity
+            android:name=".view.SobreAppActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".view.PerfilUsuarioActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".view.EditarDadosActivity"
+            android:exported="false" />
+
+
     </application>
 
 </manifest>

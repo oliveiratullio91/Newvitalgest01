@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fundo_claro">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:gravity="center_horizontal">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sobre o VitalGest"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/vermelho_primario"
+            android:gravity="center"
+            android:layout_marginBottom="16dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="O VitalGest é um aplicativo criado para apoiar a doação de sangue, ajudando usuários a organizar seus agendamentos, acompanhar histórico de doações e receber lembretes, sempre respeitando as regras de segurança e elegibilidade estabelecidas pelos hemocentros."
+            android:textSize="14sp"
+            android:textColor="@color/cinza_texto"
+            android:layout_marginBottom="12dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="As informações exibidas no aplicativo têm caráter informativo e não substituem a triagem clínica oficial ou o atendimento em serviços de saúde."
+            android:textSize="14sp"
+            android:textColor="@color/cinza_texto"
+            android:layout_marginBottom="20dp" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@android:color/white"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/vermelho_primario"
+            android:layout_marginBottom="24dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Privacidade e segurança"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/black"
+                    android:layout_marginBottom="8dp" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Seus dados pessoais são tratados conforme a Lei Geral de Proteção de Dados (LGPD), com foco em segurança, transparência e uso apenas para as finalidades necessárias ao funcionamento do aplicativo."
+                    android:textSize="14sp"
+                    android:textColor="@color/cinza_texto"
+                    android:layout_marginBottom="12dp" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnTermos"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Ver Termos de Uso e Política de Privacidade"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/white"
+                    android:backgroundTint="@color/vermelho_primario"
+                    android:padding="12dp"
+                    app:cornerRadius="16dp" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnFecharSobre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Fechar"
+            android:textAllCaps="false"
+            android:textColor="@color/vermelho_primario"
+            android:textSize="15sp"
+            android:backgroundTint="@android:color/white"
+            android:padding="12dp"
+            app:cornerRadius="16dp"
+            app:strokeWidth="1dp"
+            app:strokeColor="@color/vermelho_primario" />
+
+    </LinearLayout>
+</ScrollView>

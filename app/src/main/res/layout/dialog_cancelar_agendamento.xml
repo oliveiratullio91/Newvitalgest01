@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Resumo do agendamento -->
+        <TextView
+            android:id="@+id/txtInfoAgendamento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🏥 Hemocentro X\n📅 10/10/2025 às 09:00\n📍 Endereço"
+            android:textSize="14sp"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="12dp" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Por que você está cancelando?"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp" />
+
+        <RadioGroup
+            android:id="@+id/rgMotivoCancelamento"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <RadioButton
+                android:id="@+id/rbNaoComparecerei"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Não poderei comparecer"
+                android:textSize="14sp" />
+
+            <RadioButton
+                android:id="@+id/rbErreiData"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Errei a data/horário"
+                android:textSize="14sp" />
+
+            <RadioButton
+                android:id="@+id/rbMudancaPlanos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Mudança de planos"
+                android:textSize="14sp" />
+
+            <RadioButton
+                android:id="@+id/rbOutroMotivo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Outro motivo"
+                android:textSize="14sp" />
+        </RadioGroup>
+
+        <EditText
+            android:id="@+id/edtMotivoOutro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Descreva o motivo"
+            android:inputType="textCapSentences|textMultiLine"
+            android:minLines="2"
+            android:visibility="gone" />
+
+    </LinearLayout>
+</ScrollView>

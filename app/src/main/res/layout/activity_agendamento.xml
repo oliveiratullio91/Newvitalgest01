@@ -262,13 +262,16 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Confirmar Agendamento"
-                android:textAllCaps="false"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:textColor="@android:color/white"
+                android:textColor="@color/white"
                 android:backgroundTint="@color/vermelho_primario"
-                android:paddingVertical="12dp"
-                android:layout_marginTop="16dp" />
+                android:padding="16dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="16dp"
+                app:cornerRadius="12dp" />
 
             <!-- Botão Voltar -->
             <Button
@@ -276,12 +279,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Voltar"
-                android:textAllCaps="false"
-                android:textSize="15sp"
-                android:textColor="@color/vermelho_primario"
-                android:backgroundTint="@android:color/transparent"
-                android:paddingVertical="10dp"
-                android:layout_marginTop="8dp" />
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:padding="16dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="16dp"
+                app:cornerRadius="12dp" />
 
         </LinearLayout>
     </ScrollView>

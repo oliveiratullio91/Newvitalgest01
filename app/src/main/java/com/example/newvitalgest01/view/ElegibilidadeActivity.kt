@@ -45,7 +45,10 @@ class ElegibilidadeActivity : BaseActivity() {
         }
 
         supportActionBar?.hide()
+
         setupQuiz()
+        configurarCliqueOverlay()
+        configurarBotaoVoltar()
     }
 
     private fun setupQuiz() {
@@ -76,9 +79,9 @@ class ElegibilidadeActivity : BaseActivity() {
         binding.btVerificarResultado.setOnClickListener { view ->
             val totalPerguntas = 22
 
-            binding.resultadoElegivel.visibility = View.GONE
-            binding.resultadoNaoElegivel.visibility = View.GONE
+            // Garante que nada de loading/overlay esteja visível antes de calcular
             binding.textoLoading.visibility = View.GONE
+            binding.overlayResultado.visibility = View.GONE
 
             if (!respondeuTodas(totalPerguntas)) {
                 mostrarMensagem(
@@ -92,35 +95,45 @@ class ElegibilidadeActivity : BaseActivity() {
             val elegivel = isElegivel()
             salvarStatusElegibilidade(elegivel)
 
-            if (elegivel) {
-                binding.resultadoElegivel.visibility = View.VISIBLE
-                binding.resultadoNaoElegivel.visibility = View.GONE
-                binding.textoLoading.visibility = View.VISIBLE
-
-                mostrarMensagem(
-                    view,
-                    "Parabéns! Você aparenta estar apto(a) a doar sangue.",
-                    "#4CAF50"
-                )
-
-                handler.postDelayed({
-                    navegarParaHome()
-                }, 2000)
+            val motivos = if (elegivel) {
+                emptyList()
             } else {
-                binding.resultadoElegivel.visibility = View.GONE
-                binding.resultadoNaoElegivel.visibility = View.VISIBLE
-                binding.textoLoading.visibility = View.VISIBLE
-
-                mostrarMensagem(
-                    view,
-                    "Neste momento você não deve doar sangue. Procure um hemocentro para orientação.",
-                    "#FF5252"
-                )
-
-                handler.postDelayed({
-                    navegarParaHome()
-                }, 2000)
+                obterMotivosNaoElegivel()
             }
+
+            // Mostra a caixa sobreposta com o resultado
+            mostrarOverlayResultado(elegivel, motivos)
+
+            // Snackbar apenas como feedback rápido
+            val (mensagemSnack, corSnack) = if (elegivel) {
+                "Parabéns! Você aparenta estar apto(a) a doar sangue." to "#4CAF50"
+            } else {
+                "Neste momento você não deve doar sangue. Veja os motivos na tela." to "#FF5252"
+            }
+
+            mostrarMensagem(view, mensagemSnack, corSnack)
+        }
+    }
+
+    private fun configurarBotaoVoltar() {
+        binding.btnVoltar.setOnClickListener {
+            finish()
+        }
+    }
+
+    private fun configurarCliqueOverlay() {
+        // Ao tocar em qualquer lugar do overlay:
+        binding.overlayResultado.setOnClickListener {
+            // Esconde a caixa de resultado
+            binding.overlayResultado.visibility = View.GONE
+
+            // Mostra um pequeno texto de "voltando..."
+            binding.textoLoading.visibility = View.VISIBLE
+
+            // Só depois de 2 segundos volta para a tela de serviços (Home)
+            handler.postDelayed({
+                navegarParaHome()
+            }, 2000)
         }
     }
 
@@ -174,6 +187,108 @@ class ElegibilidadeActivity : BaseActivity() {
         val nenhumImpedimento = impedimentoSim.all { respostas[it] == false }
 
         return basicasOk && nenhumImpedimento
+    }
+
+    private fun obterMotivosNaoElegivel(): List<String> {
+        val motivos = mutableListOf<String>()
+
+        // 1–4: deveriam ser "SIM". Se for "NÃO", vira motivo.
+        if (respostas[1] == false) {
+            motivos.add("Você informou que NÃO tem entre 16 e 69 anos, faixa etária permitida para a doação.")
+        }
+        if (respostas[2] == false) {
+            motivos.add("Você informou que pesa menos de 50 kg, abaixo do mínimo recomendado para doação.")
+        }
+        if (respostas[3] == false) {
+            motivos.add("Você dormiu menos de 6 horas nas últimas 24 horas.")
+        }
+        if (respostas[4] == false) {
+            motivos.add("Você não se alimentou adequadamente nas últimas 4 horas ou consumiu alimentos muito gordurosos.")
+        }
+
+        // 5–22: se respondeu "SIM", vira motivo de impedimento
+        if (respostas[5] == true) {
+            motivos.add("Você consumiu bebida alcoólica nas últimas 12 horas.")
+        }
+        if (respostas[6] == true) {
+            motivos.add("Você está com febre, infecção ou se sentindo mal hoje.")
+        }
+        if (respostas[7] == true) {
+            motivos.add("Você está usando antibióticos ou medicamentos controlados.")
+        }
+        if (respostas[8] == true) {
+            motivos.add("Você relatou doença crônica grave ou descompensada.")
+        }
+        if (respostas[9] == true) {
+            motivos.add("Você já teve hepatite após os 11 anos de idade.")
+        }
+        if (respostas[10] == true) {
+            motivos.add("Você informou HIV, sífilis, hepatite B ou C, doença de Chagas ou malária.")
+        }
+        if (respostas[11] == true) {
+            motivos.add("Você fez tatuagem ou piercing nos últimos 6 meses.")
+        }
+        if (respostas[12] == true) {
+            motivos.add("Você fez tratamento dentário invasivo nos últimos 7 dias.")
+        }
+        if (respostas[13] == true) {
+            motivos.add("Você fez cirurgia recente (menos de 3 meses).")
+        }
+        if (respostas[14] == true) {
+            motivos.add("Você está grávida, esteve grávida recentemente ou está amamentando.")
+        }
+        if (respostas[15] == true) {
+            motivos.add("Você recebeu transfusão de sangue alguma vez na vida.")
+        }
+        if (respostas[16] == true) {
+            motivos.add("Você teve contato íntimo sem proteção com parceiro de risco para IST/DST.")
+        }
+        if (respostas[17] == true) {
+            motivos.add("Você usou drogas ilícitas injetáveis.")
+        }
+        if (respostas[18] == true) {
+            motivos.add("Você recebeu alguma vacina recentemente (menos de 30 dias).")
+        }
+        if (respostas[19] == true) {
+            motivos.add("Você esteve em área endêmica para malária nos últimos 12 meses.")
+        }
+        if (respostas[20] == true) {
+            motivos.add("Você teve COVID-19 recentemente ou está em investigação.")
+        }
+        if (respostas[21] == true) {
+            motivos.add("Seu diagnóstico de COVID-19 tem menos de 10 dias.")
+        }
+        if (respostas[22] == true) {
+            motivos.add("Você informou outro problema de saúde importante que pode impedir a doação.")
+        }
+
+        return motivos
+    }
+
+    private fun mostrarOverlayResultado(elegivel: Boolean, motivos: List<String>) {
+        // some qualquer loading
+        binding.textoLoading.visibility = View.GONE
+
+        // mostra overlay
+        binding.overlayResultado.visibility = View.VISIBLE
+
+        if (elegivel) {
+            binding.txtTituloResultado.text = "Você aparenta estar apto(a) a doar sangue"
+            binding.txtMensagemResultado.text =
+                "Com base nas suas respostas, não foram encontrados impedimentos importantes. A avaliação final será feita pela equipe do hemocentro."
+            binding.txtMotivosResultado.text =
+                "Parabéns! Você está elegível para seguir com o agendamento da sua doação."
+        } else {
+            binding.txtTituloResultado.text = "Neste momento você não deve doar sangue"
+            binding.txtMensagemResultado.text =
+                "Com base nas suas respostas, identificamos os seguintes pontos de atenção:"
+            binding.txtMotivosResultado.text =
+                if (motivos.isEmpty()) {
+                    "Há respostas que indicam impedimentos temporários ou definitivos para doação. Procure um hemocentro para avaliação detalhada."
+                } else {
+                    motivos.joinToString(separator = "\n• ", prefix = "• ")
+                }
+        }
     }
 
     private fun salvarStatusElegibilidade(elegivel: Boolean) {

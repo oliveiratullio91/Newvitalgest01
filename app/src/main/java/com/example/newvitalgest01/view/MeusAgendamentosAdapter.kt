@@ -6,12 +6,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
+import android.widget.RadioGroup
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.newvitalgest01.R
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import java.text.SimpleDateFormat
 import java.util.*
@@ -49,17 +53,25 @@ class MeusAgendamentosAdapter(
         private val txtTelefone: TextView = itemView.findViewById(R.id.txtTelefoneItem)
         private val txtStatus: TextView = itemView.findViewById(R.id.txtStatusItem)
         private val btnCancelar: Button = itemView.findViewById(R.id.btnCancelarAgendamento)
+        private val txtVerDetalhes: TextView = itemView.findViewById(R.id.txtVerDetalhesItem)
 
         fun bind(item: AgendamentoItem) {
             txtHemocentro.text = item.hemocentro
             txtDataHora.text = "📅 ${item.data} às ${item.hora}"
             txtEndereco.text = "📍 ${item.endereco}"
-            txtTelefone.text = "☎ ${item.telefone}"
-            txtStatus.text = item.status
+            txtTelefone.text = if (item.telefone.isNotBlank()) {
+                "☎ ${item.telefone}"
+            } else {
+                "☎ Telefone não informado"
+            }
 
-            val dataHoraStr = "${item.data} ${item.hora}"
             val formato = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault())
-            val dataAgendada = formato.parse(dataHoraStr)
+            val dataHoraStr = "${item.data} ${item.hora}"
+            val dataAgendada = try {
+                formato.parse(dataHoraStr)
+            } catch (e: Exception) {
+                null
+            }
             val agora = Date()
 
             val diffHoras = if (dataAgendada != null) {
@@ -68,50 +80,146 @@ class MeusAgendamentosAdapter(
                 0L
             }
 
-            // Se já estiver cancelado, esconde o botão
-            if (item.status.equals("Cancelado", ignoreCase = true)) {
-                btnCancelar.visibility = View.GONE
-                txtStatus.text = "Cancelado"
-                return
+            val expirado = dataAgendada != null && dataAgendada.before(agora)
+
+            // -------------------------
+            // Status (cores modernas)
+            // -------------------------
+            val statusExibicao = when {
+                item.status.equals("Cancelado", ignoreCase = true) -> "Cancelado"
+                expirado -> "Expirado"
+                else -> item.status
             }
 
-            // 🔴 Garante que o botão sempre fique vermelho com texto branco
-            btnCancelar.setBackgroundColor(
-                ContextCompat.getColor(context, R.color.vermelho_primario)
-            )
-            btnCancelar.setTextColor(Color.WHITE)
+            txtStatus.text = statusExibicao
 
-            // Mostra o botão e define comportamento
-            if (diffHoras > 48) {
-                btnCancelar.visibility = View.VISIBLE
-                btnCancelar.setOnClickListener { confirmarCancelamento(item) }
+            // Fundo neutro (chip)
+            txtStatus.setBackgroundResource(R.drawable.bg_status_chip_neutro)
+
+            // Cores do texto conforme status
+            when (statusExibicao.lowercase(Locale.getDefault())) {
+                "pendente" -> {
+                    txtStatus.setTextColor(
+                        ContextCompat.getColor(context, R.color.azul_info)
+                    )
+                }
+                "confirmado" -> {
+                    txtStatus.setTextColor(
+                        ContextCompat.getColor(context, android.R.color.holo_green_dark)
+                    )
+                }
+                "cancelado" -> {
+                    txtStatus.setTextColor(
+                        ContextCompat.getColor(context, R.color.vermelho_primario)
+                    )
+                }
+                "expirado" -> {
+                    txtStatus.setTextColor(
+                        ContextCompat.getColor(context, android.R.color.darker_gray)
+                    )
+                }
+                else -> {
+                    txtStatus.setTextColor(
+                        ContextCompat.getColor(context, android.R.color.black)
+                    )
+                }
+            }
+
+            // -------------------------
+            // Botão Cancelar (regra 48h)
+            // -------------------------
+
+            // Se já estiver cancelado ou expirado -> esconde botão
+            if (statusExibicao.equals("Cancelado", true) || statusExibicao.equals("Expirado", true)) {
+                btnCancelar.visibility = View.GONE
             } else {
                 btnCancelar.visibility = View.VISIBLE
-                btnCancelar.setOnClickListener { aviso48h(item) }
+                // Estilo consistente
+                btnCancelar.setBackgroundColor(
+                    ContextCompat.getColor(context, R.color.vermelho_primario)
+                )
+                btnCancelar.setTextColor(Color.WHITE)
+
+                if (diffHoras > 48) {
+                    // Pode cancelar normalmente
+                    btnCancelar.setOnClickListener {
+                        confirmarCancelamento(item)
+                    }
+                } else {
+                    // Menos de 48h -> mostrar aviso
+                    btnCancelar.setOnClickListener {
+                        aviso48h(item)
+                    }
+                }
+            }
+
+            // -------------------------
+            // Ver detalhes (resumo)
+            // -------------------------
+            txtVerDetalhes.setOnClickListener {
+                val mensagem = buildString {
+                    appendLine("🏥 ${item.hemocentro}")
+                    appendLine("📅 ${item.data} às ${item.hora}")
+                    appendLine("📍 ${item.endereco}")
+                    if (item.telefone.isNotBlank()) {
+                        appendLine("☎ ${item.telefone}")
+                    }
+                    appendLine()
+                    appendLine("Status atual: $statusExibicao")
+                }
+
+                MaterialAlertDialogBuilder(context, R.style.CustomAlertDialogTheme)
+                    .setTitle("Detalhes do agendamento")
+                    .setMessage(mensagem)
+                    .setPositiveButton("OK") { d, _ -> d.dismiss() }
+                    .show()
             }
         }
 
+        /**
+         * Dialog intermediário com motivo de cancelamento (sugestões 3 e 4).
+         */
         private fun confirmarCancelamento(item: AgendamentoItem) {
-            val mensagem = buildString {
-                appendLine("Tem certeza de que deseja cancelar este agendamento?")
-                appendLine()
+            val dialogView = LayoutInflater.from(context)
+                .inflate(R.layout.dialog_cancelar_agendamento, null)
+
+            val txtInfo = dialogView.findViewById<TextView>(R.id.txtInfoAgendamento)
+            val rgMotivo = dialogView.findViewById<RadioGroup>(R.id.rgMotivoCancelamento)
+            val edtMotivoOutro = dialogView.findViewById<EditText>(R.id.edtMotivoOutro)
+
+            val resumo = buildString {
                 appendLine("🏥 ${item.hemocentro}")
                 appendLine("📅 ${item.data} às ${item.hora}")
+                appendLine("📍 ${item.endereco}")
+            }
+            txtInfo.text = resumo
+
+            // Mostrar campo "outro motivo" apenas quando marcado
+            rgMotivo.setOnCheckedChangeListener { _, checkedId ->
+                edtMotivoOutro.visibility =
+                    if (checkedId == R.id.rbOutroMotivo) View.VISIBLE else View.GONE
             }
 
-            MaterialAlertDialogBuilder(context, R.style.CustomAlertDialogTheme)
+            val dialog = MaterialAlertDialogBuilder(context, R.style.CustomAlertDialogTheme)
                 .setTitle("Cancelar agendamento")
-                .setMessage(mensagem)
-                .setCancelable(false)
-                .setNegativeButton("Voltar") { d, _ -> d.dismiss() }
-                .setPositiveButton("Sim, cancelar") { d, _ ->
+                .setView(dialogView)
+                .setNegativeButton("Voltar", null)
+                .setPositiveButton("Confirmar cancelamento") { d, _ ->
+                    val motivo = obterMotivoSelecionado(rgMotivo, edtMotivoOutro)
+
                     val usuario = auth.currentUser
                     if (usuario != null) {
+                        val dadosAtualizacao = mapOf(
+                            "status" to "Cancelado",
+                            "motivoCancelamento" to motivo,
+                            "canceladoEm" to FieldValue.serverTimestamp()
+                        )
+
                         firestore.collection("usuarios")
                             .document(usuario.uid)
                             .collection("agendamentos")
                             .document(item.id)
-                            .update("status", "Cancelado")
+                            .update(dadosAtualizacao)
                             .addOnSuccessListener {
                                 mostrarMensagem("Agendamento cancelado com sucesso.")
                             }
@@ -121,11 +229,34 @@ class MeusAgendamentosAdapter(
                     } else {
                         mostrarMensagem("Usuário não autenticado.")
                     }
+
                     d.dismiss()
                 }
-                .show()
+                .create()
+
+            dialog.show()
         }
 
+        private fun obterMotivoSelecionado(
+            rgMotivo: RadioGroup,
+            edtMotivoOutro: EditText
+        ): String {
+            val selectedId = rgMotivo.checkedRadioButtonId
+            return when (selectedId) {
+                R.id.rbNaoComparecerei -> "Não poderei comparecer"
+                R.id.rbErreiData -> "Errei a data/horário"
+                R.id.rbMudancaPlanos -> "Mudança de planos"
+                R.id.rbOutroMotivo -> {
+                    val textoOutro = edtMotivoOutro.text.toString().trim()
+                    if (textoOutro.isNotEmpty()) textoOutro else "Outro motivo"
+                }
+                else -> "Não informado"
+            }
+        }
+
+        /**
+         * Aviso quando estiver a menos de 48h (sugestão 2B + 5).
+         */
         private fun aviso48h(item: AgendamentoItem) {
             val mensagem = buildString {
                 appendLine("O agendamento só pode ser cancelado com até 48h de antecedência.")
@@ -144,11 +275,15 @@ class MeusAgendamentosAdapter(
                 .show()
         }
 
+        /**
+         * Snackbar estilizada (sugestão 6).
+         */
         private fun mostrarMensagem(mensagem: String) {
-            MaterialAlertDialogBuilder(context, R.style.CustomAlertDialogTheme)
-                .setTitle("VitalGest")
-                .setMessage(mensagem)
-                .setPositiveButton("OK") { d, _ -> d.dismiss() }
+            Snackbar.make(itemView, mensagem, Snackbar.LENGTH_LONG)
+                .setBackgroundTint(
+                    ContextCompat.getColor(context, R.color.vermelho_primario)
+                )
+                .setTextColor(Color.WHITE)
                 .show()
         }
     }

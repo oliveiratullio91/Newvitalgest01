@@ -1,0 +1,291 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/fundo_claro">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp"
+        android:gravity="center_horizontal">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Perfil do doador"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/vermelho_primario"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center_horizontal"
+            android:layout_marginBottom="12dp" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="18dp"
+            app:cardElevation="4dp"
+            app:cardUseCompatPadding="true"
+            android:backgroundTint="@android:color/white"
+            android:layout_marginBottom="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Nome -->
+                <TextView
+                    android:id="@+id/txtPerfilNome"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Nome do usuário"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/black"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="center_horizontal" />
+
+                <!-- Status de elegibilidade -->
+                <TextView
+                    android:id="@+id/txtPerfilStatusElegibilidade"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Status: Não verificado"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/black"
+                    android:gravity="center_horizontal"
+                    android:layout_marginBottom="12dp" />
+
+                <!-- Linha 1: sexo + idade + peso -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="3"
+                    android:layout_marginBottom="8dp">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_weight="1">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Sexo"
+                            android:textSize="12sp"
+                            android:textColor="@color/cinza_texto" />
+
+                        <TextView
+                            android:id="@+id/txtPerfilSexo"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="-"
+                            android:textSize="14sp"
+                            android:textColor="@android:color/black" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_weight="1">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Idade"
+                            android:textSize="12sp"
+                            android:textColor="@color/cinza_texto" />
+
+                        <TextView
+                            android:id="@+id/txtPerfilIdade"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="-"
+                            android:textSize="14sp"
+                            android:textColor="@android:color/black" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:layout_weight="1">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Peso"
+                            android:textSize="12sp"
+                            android:textColor="@color/cinza_texto" />
+
+                        <TextView
+                            android:id="@+id/txtPerfilPeso"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="-"
+                            android:textSize="14sp"
+                            android:textColor="@android:color/black" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Tipo sanguíneo -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Tipo sanguíneo"
+                    android:textSize="12sp"
+                    android:textColor="@color/cinza_texto" />
+
+                <TextView
+                    android:id="@+id/txtPerfilTipoSanguineo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Não informado"
+                    android:textSize="14sp"
+                    android:textColor="@android:color/black"
+                    android:layout_marginBottom="8dp" />
+
+                <!-- Data de nascimento -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Data de nascimento"
+                    android:textSize="12sp"
+                    android:textColor="@color/cinza_texto" />
+
+                <TextView
+                    android:id="@+id/txtPerfilNascimento"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="-"
+                    android:textSize="14sp"
+                    android:textColor="@android:color/black"
+                    android:layout_marginBottom="8dp" />
+
+                <!-- Cidade / Estado -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Cidade / Estado"
+                    android:textSize="12sp"
+                    android:textColor="@color/cinza_texto" />
+
+                <TextView
+                    android:id="@+id/txtPerfilCidadeEstado"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="-"
+                    android:textSize="14sp"
+                    android:textColor="@android:color/black"
+                    android:layout_marginBottom="8dp" />
+
+                <!-- Email -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="E-mail"
+                    android:textSize="12sp"
+                    android:textColor="@color/cinza_texto" />
+
+                <TextView
+                    android:id="@+id/txtPerfilEmail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="-"
+                    android:textSize="14sp"
+                    android:textColor="@android:color/black"
+                    android:layout_marginBottom="8dp" />
+
+                <!-- Telefone -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Telefone"
+                    android:textSize="12sp"
+                    android:textColor="@color/cinza_texto" />
+
+                <TextView
+                    android:id="@+id/txtPerfilTelefone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="-"
+                    android:textSize="14sp"
+                    android:textColor="@android:color/black"
+                    android:layout_marginBottom="12dp" />
+
+                <!-- Próxima doação -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Próxima data possível para doar"
+                    android:textSize="12sp"
+                    android:textColor="@color/cinza_texto" />
+
+                <TextView
+                    android:id="@+id/txtPerfilProximaDoacao"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Próxima doação: ainda não foi possível calcular."
+                    android:textSize="14sp"
+                    android:textColor="@android:color/black"
+                    android:layout_marginBottom="8dp" />
+
+                <!-- Vidas salvas -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Impacto das suas doações"
+                    android:textSize="12sp"
+                    android:textColor="@color/cinza_texto" />
+
+                <TextView
+                    android:id="@+id/txtPerfilVidasSalvas"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Nenhuma doação registrada ainda."
+                    android:textSize="14sp"
+                    android:textColor="@android:color/black"
+                    android:layout_marginBottom="12dp" />
+
+                <!-- Botão editar -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnEditarDados"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Editar meus dados"
+                    android:textAllCaps="false"
+                    android:textSize="15sp"
+                    android:backgroundTint="@android:color/white"
+                    android:textColor="@color/vermelho_primario"
+                    android:paddingVertical="10dp"
+                    app:cornerRadius="18dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/vermelho_primario" />
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnFecharPerfil"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Voltar"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:fontFamily="sans-serif-medium"
+            android:paddingVertical="12dp"
+            android:backgroundTint="@color/vermelho_primario"
+            android:textColor="@android:color/white"
+            app:cornerRadius="18dp" />
+
+    </LinearLayout>
+</ScrollView>

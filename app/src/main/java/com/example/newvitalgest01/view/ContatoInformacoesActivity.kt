@@ -14,14 +14,11 @@ class ContatoInformacoesActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_contato_informacoes)
 
-        // 🔹 Remove completamente a ActionBar (a faixa azul superior)
         supportActionBar?.hide()
 
-        // 🔹 Deixa status bar e navigation bar com a mesma cor do fundo
         window.statusBarColor = ContextCompat.getColor(this, R.color.fundo_claro)
         window.navigationBarColor = ContextCompat.getColor(this, R.color.fundo_claro)
 
-        // 🔹 Ícones escuros na barra de status (modo claro)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             window.insetsController?.setSystemBarsAppearance(
                 android.view.WindowInsetsController.APPEARANCE_LIGHT_STATUS_BARS,
@@ -36,6 +33,7 @@ class ContatoInformacoesActivity : AppCompatActivity() {
         val btnEmail = findViewById<Button>(R.id.btnEmail)
         val btnTelefone = findViewById<Button>(R.id.btnTelefone)
         val btnSite = findViewById<Button>(R.id.btnSite)
+        val btnSobreApp = findViewById<Button>(R.id.btnSobreApp)
         val btnVoltar = findViewById<Button>(R.id.btnVoltar)
 
         // Botão de envio de e-mail
@@ -63,7 +61,13 @@ class ContatoInformacoesActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // Botão Voltar (no layout)
+        // Botão Sobre o app (abre tela dedicada)
+        btnSobreApp.setOnClickListener {
+            val intent = Intent(this, SobreAppActivity::class.java)
+            startActivity(intent)
+        }
+
+        // Botão Voltar
         btnVoltar.setOnClickListener {
             finish()
         }

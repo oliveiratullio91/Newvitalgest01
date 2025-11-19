@@ -111,10 +111,14 @@
                 android:layout_height="wrap_content"
                 android:text="Voltar"
                 android:textSize="16sp"
-                android:textAllCaps="false"
-                android:layout_marginTop="20dp"
-                android:textColor="@color/vermelho_primario"
-                android:backgroundTint="@android:color/transparent" />
+                android:textStyle="bold"
+                android:textColor="@color/white"
+                android:backgroundTint="@color/vermelho_primario"
+                android:padding="16dp"
+                android:layout_marginStart="24dp"
+                android:layout_marginEnd="24dp"
+                android:layout_marginBottom="16dp"
+                app:cornerRadius="12dp" />
 
         </LinearLayout>
     </ScrollView>
