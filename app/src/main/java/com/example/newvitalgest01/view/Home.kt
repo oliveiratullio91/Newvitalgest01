@@ -5,9 +5,12 @@ import android.animation.ObjectAnimator
 import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.example.newvitalgest01.MainActivity
 import com.example.newvitalgest01.R
@@ -26,13 +29,17 @@ class Home : BaseActivity() {
     private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
     private val firestore: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
 
+    // Flag simples para sabermos se o app está online no momento
+    // (considerando internet física + modo offline lógico)
+    private var estaOnline: Boolean = true
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = ActivityHomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Status bar clara
+        // Status bar / nav bar claras
         window.statusBarColor = ContextCompat.getColor(this, R.color.fundo_claro)
         window.navigationBarColor = ContextCompat.getColor(this, R.color.fundo_claro)
 
@@ -50,47 +57,84 @@ class Home : BaseActivity() {
 
         setupButtons()
         configurarTooltipTipoSanguineo()
+
+        // Ao entrar na tela, já checa conectividade + modo offline e aplica o modo correto
+        atualizarConectividadeEModo()
     }
 
     override fun onResume() {
         super.onResume()
+
+        // Sempre que volta para a tela, recarrega dados + conectividade
+        atualizarConectividadeEModo()
         carregarNomeUsuario()
         carregarStatusElegibilidade()
-        carregarResumoEstatisticas()
-        carregarProximoAgendamento()
+
+        if (estaOnline) {
+            // Só busca coisas que dependem de internet se estiver realmente online
+            carregarResumoEstatisticas()
+            carregarProximoAgendamento()
+        } else {
+            // Modo offline: mostra placeholders
+            binding.txtTotalDoacoes.text = "-"
+            binding.txtVidasImpactadas.text = "-"
+            binding.txtAgendamentosPendentes.text = "-"
+            binding.txtProximoAgendamento.text = "📅 Indisponível no modo offline"
+            binding.txtStatusAgendamento.visibility = View.GONE
+        }
     }
 
     // ---------------- BOTÕES ----------------
 
     private fun setupButtons() {
+        // ✅ Elegibilidade – liberado offline
         binding.btElegibilidade.setOnClickListener {
             startActivity(Intent(this, ElegibilidadeActivity::class.java))
         }
 
+        // ❌ Doar Sangue – bloqueado offline
         binding.btDoarSangue.setOnClickListener {
+            if (!estaOnline) {
+                mostrarMensagemOffline()
+                return@setOnClickListener
+            }
             startActivity(Intent(this, Agendamento::class.java))
         }
 
+        // ❌ Meus Agendamentos – bloqueado offline
         binding.btMeusAgendamentos.setOnClickListener {
+            if (!estaOnline) {
+                mostrarMensagemOffline()
+                return@setOnClickListener
+            }
             startActivity(Intent(this, MeusAgendamentosActivity::class.java))
         }
 
+        // ❌ Histórico – bloqueado offline
         binding.btHistorico.setOnClickListener {
+            if (!estaOnline) {
+                mostrarMensagemOffline()
+                return@setOnClickListener
+            }
             startActivity(Intent(this, HistoricoDoacoesActivity::class.java))
         }
 
+        // ✅ Hemocentros Próximos – liberado offline
         binding.btClinicas.setOnClickListener {
             startActivity(Intent(this, HemocentrosProximosActivity::class.java))
         }
 
+        // ✅ Contato e Informações – liberado offline
         binding.btContato.setOnClickListener {
             startActivity(Intent(this, ContatoInformacoesActivity::class.java))
         }
 
+        // ✅ Ver Perfil – liberado offline
         binding.btPerfilUsuario.setOnClickListener {
             startActivity(Intent(this, PerfilUsuarioActivity::class.java))
         }
 
+        // ✅ Sair – sempre permitido
         binding.btSair.setOnClickListener {
             val intent = Intent(this, MainActivity::class.java)
             intent.addFlags(
@@ -102,6 +146,94 @@ class Home : BaseActivity() {
         }
     }
 
+    // ---------------- MODO ONLINE / OFFLINE ----------------
+
+    private fun atualizarConectividadeEModo() {
+        // Lê o flag de modo offline lógico salvo no loginPrefs
+        val prefs = getSharedPreferences("loginPrefs", MODE_PRIVATE)
+        val modoOffline = prefs.getBoolean("offlineMode", false)
+
+        val conectadoFisicamente = verificarSeEstaOnline()
+
+        // Se o usuário ativou modo offline, força "desconectado"
+        estaOnline = conectadoFisicamente && !modoOffline
+
+        aplicarModoConectividade()
+    }
+
+    private fun verificarSeEstaOnline(): Boolean {
+        val cm = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val network = cm.activeNetwork ?: return false
+            val caps = cm.getNetworkCapabilities(network) ?: return false
+            caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+        } else {
+            @Suppress("DEPRECATION")
+            val info = cm.activeNetworkInfo
+            @Suppress("DEPRECATION")
+            info != null && info.isConnected
+        }
+    }
+
+    /**
+     * Regra:
+     * - Offline (inclui modo offline lógico): pode Elegibilidade, Hemocentros Próximos, Contato, Perfil, Sair.
+     * - Online: tudo liberado.
+     */
+    private fun aplicarModoConectividade() {
+        if (!estaOnline) {
+            // BLOQUEADOS offline
+            binding.btDoarSangue.isEnabled = false
+            binding.btMeusAgendamentos.isEnabled = false
+            binding.btHistorico.isEnabled = false
+
+            binding.btDoarSangue.alpha = 0.5f
+            binding.btMeusAgendamentos.alpha = 0.5f
+            binding.btHistorico.alpha = 0.5f
+
+            // LIBERADOS offline
+            binding.btElegibilidade.isEnabled = true
+            binding.btClinicas.isEnabled = true
+            binding.btContato.isEnabled = true
+            binding.btPerfilUsuario.isEnabled = true
+            binding.btSair.isEnabled = true
+
+            binding.btElegibilidade.alpha = 1f
+            binding.btClinicas.alpha = 1f
+            binding.btContato.alpha = 1f
+            binding.btPerfilUsuario.alpha = 1f
+            binding.btSair.alpha = 1f
+        } else {
+            // ONLINE: tudo liberado
+            binding.btDoarSangue.isEnabled = true
+            binding.btMeusAgendamentos.isEnabled = true
+            binding.btHistorico.isEnabled = true
+            binding.btContato.isEnabled = true
+            binding.btPerfilUsuario.isEnabled = true
+            binding.btElegibilidade.isEnabled = true
+            binding.btClinicas.isEnabled = true
+            binding.btSair.isEnabled = true
+
+            binding.btDoarSangue.alpha = 1f
+            binding.btMeusAgendamentos.alpha = 1f
+            binding.btHistorico.alpha = 1f
+            binding.btContato.alpha = 1f
+            binding.btPerfilUsuario.alpha = 1f
+            binding.btElegibilidade.alpha = 1f
+            binding.btClinicas.alpha = 1f
+            binding.btSair.alpha = 1f
+        }
+    }
+
+    private fun mostrarMensagemOffline() {
+        Toast.makeText(
+            this,
+            "Essa opção só pode ser usada com conexão à internet.",
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+
     // ---------------- TOOLTIP DO ÍCONE ----------------
 
     private fun configurarTooltipTipoSanguineo() {
@@ -111,8 +243,7 @@ class Home : BaseActivity() {
             binding.iconTipoSanguineo.tooltipText = tooltipText
         } else {
             binding.iconTipoSanguineo.setOnLongClickListener {
-                android.widget.Toast.makeText(this, tooltipText, android.widget.Toast.LENGTH_SHORT)
-                    .show()
+                Toast.makeText(this, tooltipText, Toast.LENGTH_SHORT).show()
                 true
             }
         }
@@ -162,14 +293,14 @@ class Home : BaseActivity() {
 
     private fun aplicarCorTipoSanguineo(tipo: String?) {
         val cor = when (tipo) {
-            "O+" -> Color.parseColor("#C62828") // vermelho forte
-            "O-" -> Color.parseColor("#8E0000") // vermelho escuro
-            "A+" -> Color.parseColor("#AD1457") // magenta
-            "A-" -> Color.parseColor("#6A1B9A") // roxo
-            "B+" -> Color.parseColor("#1565C0") // azul
-            "B-" -> Color.parseColor("#2E7D32") // verde
-            "AB+" -> Color.parseColor("#4527A0") // roxo profundo
-            "AB-" -> Color.parseColor("#00897B") // teal
+            "O+" -> Color.parseColor("#C62828")
+            "O-" -> Color.parseColor("#8E0000")
+            "A+" -> Color.parseColor("#AD1457")
+            "A-" -> Color.parseColor("#6A1B9A")
+            "B+" -> Color.parseColor("#1565C0")
+            "B-" -> Color.parseColor("#2E7D32")
+            "AB+" -> Color.parseColor("#4527A0")
+            "AB-" -> Color.parseColor("#00897B")
             else -> ContextCompat.getColor(this, R.color.vermelho_primario)
         }
 
@@ -261,17 +392,11 @@ class Home : BaseActivity() {
                     when {
                         status in statusConcluidos -> concluidas++
                         status == "pendente" -> pendentes++
-                        // cancelado / expirado / etc. são ignorados
                     }
                 }
 
-                // total de doações realizadas
                 binding.txtTotalDoacoes.text = concluidas.toString()
-
-                // vidas impactadas (4 por doação como média)
                 binding.txtVidasImpactadas.text = (concluidas * 4).toString()
-
-                // agendamentos com status exatamente "pendente"
                 binding.txtAgendamentosPendentes.text = pendentes.toString()
             }
     }
@@ -362,7 +487,8 @@ class Home : BaseActivity() {
                     return@addOnSuccessListener
                 }
 
-                val hemocentro = melhorAgendamentoDoc.getString("hemocentro") ?: "Hemocentro"
+                val hemocentro =
+                    melhorAgendamentoDoc.getString("hemocentro") ?: "Hemocentro"
                 val cidade = melhorAgendamentoDoc.getString("cidade") ?: ""
                 val estado = melhorAgendamentoDoc.getString("estado") ?: ""
                 val dataStr = melhorAgendamentoDoc.getString("data") ?: ""

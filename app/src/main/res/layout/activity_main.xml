@@ -247,6 +247,25 @@
                     app:iconPadding="8dp"
                     app:iconTint="@null" />
 
+                <!-- Botão "Entrar em modo offline" na tela de login -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnModoOffline"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Entrar em modo offline"
+                    android:textAllCaps="false"
+                    android:textColor="@color/vermelho_primario"
+                    android:textSize="15sp"
+                    android:fontFamily="sans-serif-medium"
+                    android:paddingVertical="12dp"
+                    android:backgroundTint="@android:color/white"
+                    app:cornerRadius="18dp"
+                    app:strokeWidth="1dp"
+                    app:strokeColor="@color/vermelho_primario"
+                    app:elevation="0dp"
+                    android:layout_marginTop="16dp"/>
+
+
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 

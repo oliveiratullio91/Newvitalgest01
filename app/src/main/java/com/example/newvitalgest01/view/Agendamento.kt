@@ -8,27 +8,23 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.newvitalgest01.R
 import com.example.newvitalgest01.databinding.ActivityAgendamentoBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
 import java.util.Locale
 import kotlin.math.atan2
 import kotlin.math.cos
+import kotlin.math.pow
 import kotlin.math.sin
 import kotlin.math.sqrt
-import kotlin.math.pow
 
-/**
- * Modelo de Hemocentro usado na tela de agendamento.
- * O nome já vem LIMPO (sem LTDA, S/A, ME etc.).
- */
 data class Hemocentro(
     val id: String,
     val nome: String,
@@ -43,7 +39,7 @@ data class Hemocentro(
     val horarioFuncionamento: String?,
     val latitude: Double?,
     val longitude: Double?,
-    val distanciaKm: Double?        // pode ser nulo se não tiver localização
+    val distanciaKm: Double?
 )
 
 class Agendamento : BaseActivity() {
@@ -53,11 +49,9 @@ class Agendamento : BaseActivity() {
     private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
     private val firestore: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
 
-    // Lista de hemocentros já filtrados/deduplicados
     private val todosHemocentros = mutableListOf<Hemocentro>()
     private var hemocentroSelecionado: Hemocentro? = null
 
-    // Localização do usuário (opcional) – pode vir como extra na Intent
     private var userLat: Double? = null
     private var userLng: Double? = null
 
@@ -69,7 +63,6 @@ class Agendamento : BaseActivity() {
 
         supportActionBar?.hide()
 
-        // Cores da status bar / nav bar
         window.statusBarColor = ContextCompat.getColor(this, R.color.fundo_claro)
         window.navigationBarColor = ContextCompat.getColor(this, R.color.fundo_claro)
 
@@ -84,47 +77,47 @@ class Agendamento : BaseActivity() {
                 window.decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         }
 
-        // Tenta pegar localização do usuário enviada pela outra tela (opcional)
+        // localização opcional vinda da intent (para distância)
         val latExtra = intent.getDoubleExtra("userLat", Double.NaN)
         val lngExtra = intent.getDoubleExtra("userLng", Double.NaN)
-        if (!latExtra.isNaN() && !lngExtra.isNaN()) {
-            userLat = latExtra
-            userLng = lngExtra
-        }
+        userLat = if (latExtra.isNaN()) null else latExtra
+        userLng = if (lngExtra.isNaN()) null else lngExtra
 
         configurarPickers()
         configurarSpinners()
         configurarCliques()
 
-        // Esconde o card inicialmente
+        // card de informações do hemocentro começa escondido
         binding.cardHemocentroInfo.visibility = View.GONE
+        desabilitarBotaoAgendar("Selecione um hemocentro para continuar")
 
-        // Carrega hemocentros do Firestore com filtro forte
         carregarHemocentros()
     }
 
-    // --------------------------------------------------------------------
-    // DatePicker & TimePicker
-    // --------------------------------------------------------------------
+    // ---------------- Date & Time ----------------
+
     private fun configurarPickers() {
         val hoje = Calendar.getInstance()
         binding.datePicker.minDate = hoje.timeInMillis
         binding.timePicker.setIs24HourView(true)
     }
 
-    // --------------------------------------------------------------------
-    // Spinners
-    // --------------------------------------------------------------------
+    // ---------------- Adapters de Spinner ----------------
+
+    private fun criarAdapter(lista: List<String>): ArrayAdapter<String> {
+        return ArrayAdapter(
+            this,
+            R.layout.item_spinner_text,
+            lista
+        ).also {
+            it.setDropDownViewResource(R.layout.item_spinner_dropdown_text)
+        }
+    }
+
+    // ---------------- Spinners ----------------
+
     private fun configurarSpinners() {
-
-        binding.btAgendar.isEnabled = false
-
-        fun criarAdapter(itens: List<String>) =
-            ArrayAdapter(this, R.layout.item_spinner_text, itens).apply {
-                setDropDownViewResource(R.layout.item_spinner_dropdown_text)
-            }
-
-        // Placeholders
+        // Estados iniciais "carregando"
         binding.spinnerRegiao.adapter = criarAdapter(listOf("Carregando regiões..."))
         binding.spinnerUf.adapter = criarAdapter(listOf("Selecione a região"))
         binding.spinnerCidade.adapter = criarAdapter(listOf("Selecione o estado"))
@@ -139,10 +132,9 @@ class Agendamento : BaseActivity() {
                     position: Int,
                     id: Long
                 ) {
-                    val regiao = parent?.getItemAtPosition(position) as? String ?: return
-                    if (!regiao.startsWith("Selecione")) {
-                        atualizarUf(regiao)
-                    }
+                    val regiao = parent?.getItemAtPosition(position) as String
+                    if (regiao == "Carregando regiões..." || regiao == "Todas as regiões") return
+                    atualizarSpinnerUf(regiao)
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -157,10 +149,10 @@ class Agendamento : BaseActivity() {
                     position: Int,
                     id: Long
                 ) {
-                    val uf = parent?.getItemAtPosition(position) as? String ?: return
-                    if (!uf.startsWith("Selecione")) {
-                        atualizarCidade(uf)
-                    }
+                    val uf = parent?.getItemAtPosition(position) as String
+                    if (uf == "Selecione a região" || uf == "Todos os estados") return
+                    val regiaoSelecionada = binding.spinnerRegiao.selectedItem as? String
+                    atualizarSpinnerCidade(regiaoSelecionada, uf)
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -175,11 +167,11 @@ class Agendamento : BaseActivity() {
                     position: Int,
                     id: Long
                 ) {
-                    val cidade = parent?.getItemAtPosition(position) as? String ?: return
-                    if (!cidade.startsWith("Selecione")) {
-                        val uf = binding.spinnerUf.selectedItem as? String ?: return
-                        atualizarHemocentro(uf, cidade)
-                    }
+                    val cidade = parent?.getItemAtPosition(position) as String
+                    if (cidade == "Selecione o estado" || cidade == "Todas as cidades") return
+                    val ufSelecionada = binding.spinnerUf.selectedItem as? String
+                    val regiaoSelecionada = binding.spinnerRegiao.selectedItem as? String
+                    atualizarSpinnerHemocentro(regiaoSelecionada, ufSelecionada, cidade)
                 }
 
                 override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -194,43 +186,168 @@ class Agendamento : BaseActivity() {
                     position: Int,
                     id: Long
                 ) {
-                    val nome = parent?.getItemAtPosition(position) as? String ?: return
-
-                    if (nome.startsWith("Selecione")) {
+                    val nomeHemocentro = parent?.getItemAtPosition(position) as String
+                    if (nomeHemocentro.startsWith("Selecione") ||
+                        nomeHemocentro.startsWith("Nenhum hemocentro")
+                    ) {
                         hemocentroSelecionado = null
                         binding.cardHemocentroInfo.visibility = View.GONE
+                        desabilitarBotaoAgendar("Selecione um hemocentro para continuar")
                         return
                     }
 
-                    val uf = binding.spinnerUf.selectedItem as? String
-                    val cidade = binding.spinnerCidade.selectedItem as? String
+                    val selecionado = todosHemocentros.find { it.nome == nomeHemocentro }
+                    hemocentroSelecionado = selecionado
 
-                    val hemo = todosHemocentros.firstOrNull {
-                        it.nome == nome && it.uf == uf && it.cidade == cidade
-                    }
+                    if (selecionado != null) {
+                        binding.cardHemocentroInfo.visibility = View.VISIBLE
 
-                    hemocentroSelecionado = hemo
+                        val endereco = buildString {
+                            append(selecionado.logradouro ?: "")
+                            if (!selecionado.numero.isNullOrBlank() && selecionado.numero != "S/N") {
+                                if (isNotEmpty()) append(", ")
+                                append(selecionado.numero)
+                            }
+                            if (selecionado.cidade.isNotBlank() && selecionado.uf.isNotBlank()) {
+                                if (isNotEmpty()) append(" - ")
+                                append("${selecionado.cidade}/${selecionado.uf}")
+                            }
+                        }
 
-                    if (hemo != null) {
-                        preencherCardHemocentro(hemo)
+                        binding.txtNomeHemo.text = selecionado.nome
+                        binding.txtEnderecoHemo.text =
+                            endereco.ifBlank { "Endereço não informado" }
+                        binding.txtTelefoneHemo.text =
+                            selecionado.telefone ?: "Telefone não informado"
+                        binding.txtStatusHemo.text =
+                            selecionado.status ?: "Status não informado"
+                        binding.txtHorarioHemo.text =
+                            selecionado.horarioFuncionamento ?: "Horário não informado"
+
+                        val distancia = selecionado.distanciaKm
+                        if (distancia != null) {
+                            binding.txtDistanciaHemo.visibility = View.VISIBLE
+                            binding.txtDistanciaHemo.text = String.format(
+                                Locale("pt", "BR"),
+                                "%.1f km de você",
+                                distancia
+                            )
+                        } else {
+                            binding.txtDistanciaHemo.visibility = View.GONE
+                        }
+
+                        habilitarBotaoAgendar()
                     } else {
                         binding.cardHemocentroInfo.visibility = View.GONE
+                        desabilitarBotaoAgendar("Selecione um hemocentro para continuar")
                     }
                 }
 
-                override fun onNothingSelected(parent: AdapterView<*>?) {
-                    hemocentroSelecionado = null
-                    binding.cardHemocentroInfo.visibility = View.GONE
-                }
+                override fun onNothingSelected(parent: AdapterView<*>?) {}
             }
     }
 
-    // --------------------------------------------------------------------
-    // Botões
-    // --------------------------------------------------------------------
+    private fun atualizarSpinnerRegiao() {
+        val regioes = todosHemocentros
+            .map { it.regiao }
+            .distinct()
+            .sorted()
+
+        if (regioes.isEmpty()) {
+            binding.spinnerRegiao.adapter =
+                criarAdapter(listOf("Nenhum hemocentro disponível"))
+            binding.spinnerUf.adapter =
+                criarAdapter(listOf("—"))
+            binding.spinnerCidade.adapter =
+                criarAdapter(listOf("—"))
+            binding.spinnerHemocentro.adapter =
+                criarAdapter(listOf("Nenhum hemocentro encontrado"))
+            desabilitarBotaoAgendar("Nenhum hemocentro disponível no momento")
+            return
+        }
+
+        binding.spinnerRegiao.adapter =
+            criarAdapter(listOf("Todas as regiões") + regioes)
+    }
+
+    private fun atualizarSpinnerUf(regiaoSelecionada: String) {
+        val ufs = todosHemocentros
+            .filter { it.regiao == regiaoSelecionada }
+            .map { it.uf }
+            .distinct()
+            .sorted()
+
+        if (ufs.isEmpty()) {
+            binding.spinnerUf.adapter =
+                criarAdapter(listOf("Nenhum estado disponível"))
+            binding.spinnerCidade.adapter =
+                criarAdapter(listOf("—"))
+            binding.spinnerHemocentro.adapter =
+                criarAdapter(listOf("Nenhum hemocentro encontrado"))
+            desabilitarBotaoAgendar("Nenhum hemocentro disponível para essa região")
+            return
+        }
+
+        binding.spinnerUf.adapter =
+            criarAdapter(listOf("Todos os estados") + ufs)
+    }
+
+    private fun atualizarSpinnerCidade(regiaoSelecionada: String?, ufSelecionada: String?) {
+        if (regiaoSelecionada == null || ufSelecionada == null) return
+
+        val cidades = todosHemocentros
+            .filter { it.regiao == regiaoSelecionada && it.uf == ufSelecionada }
+            .map { it.cidade }
+            .distinct()
+            .sorted()
+
+        if (cidades.isEmpty()) {
+            binding.spinnerCidade.adapter =
+                criarAdapter(listOf("Nenhuma cidade disponível"))
+            binding.spinnerHemocentro.adapter =
+                criarAdapter(listOf("Nenhum hemocentro encontrado"))
+            desabilitarBotaoAgendar("Nenhum hemocentro disponível para esse filtro")
+            return
+        }
+
+        binding.spinnerCidade.adapter =
+            criarAdapter(listOf("Todas as cidades") + cidades)
+    }
+
+    private fun atualizarSpinnerHemocentro(
+        regiaoSelecionada: String?,
+        ufSelecionada: String?,
+        cidadeSelecionada: String?
+    ) {
+        if (regiaoSelecionada == null || ufSelecionada == null || cidadeSelecionada == null) return
+
+        val hemocentrosFiltrados = todosHemocentros
+            .filter {
+                it.regiao == regiaoSelecionada &&
+                        it.uf == ufSelecionada &&
+                        it.cidade == cidadeSelecionada
+            }
+            .sortedBy { it.nome.lowercase(Locale("pt", "BR")) }
+
+        val nomes = hemocentrosFiltrados.map { it.nome }
+
+        if (nomes.isEmpty()) {
+            binding.spinnerHemocentro.adapter =
+                criarAdapter(listOf("Nenhum hemocentro encontrado"))
+            hemocentroSelecionado = null
+            binding.cardHemocentroInfo.visibility = View.GONE
+            desabilitarBotaoAgendar("Nenhum hemocentro disponível para esse filtro")
+        } else {
+            binding.spinnerHemocentro.adapter =
+                criarAdapter(listOf("Selecione o hemocentro") + nomes)
+        }
+    }
+
+    // ---------------- Botões ----------------
+
     private fun configurarCliques() {
         binding.btAgendar.setOnClickListener {
-            confirmarAgendamento()
+            realizarAgendamento()
         }
 
         binding.btVoltarServicos.setOnClickListener {
@@ -238,42 +355,229 @@ class Agendamento : BaseActivity() {
         }
     }
 
-    // --------------------------------------------------------------------
-    // Carregamento de Hemocentros do Firestore
-    // Com filtro forte + limpeza de nome + remoção de duplicados
-    // --------------------------------------------------------------------
+    private fun desabilitarBotaoAgendar(motivo: String? = null) {
+        binding.btAgendar.isEnabled = false
+        binding.btAgendar.alpha = 0.5f
+        motiveToSnackbar(motivo)
+    }
+
+    private fun habilitarBotaoAgendar() {
+        binding.btAgendar.isEnabled = true
+        binding.btAgendar.alpha = 1f
+    }
+
+    private fun motiveToSnackbar(motivo: String?) {
+        if (motivo.isNullOrBlank()) return
+        mostrarSnackbar(motivo, "#9E9E9E")
+    }
+
+    private fun realizarAgendamento() {
+        val usuario = auth.currentUser
+        if (usuario == null) {
+            mostrarSnackbar("⚠ Você precisa estar autenticado para agendar.", "#FF0000")
+            return
+        }
+
+        val hemocentro = hemocentroSelecionado
+        if (hemocentro == null) {
+            mostrarSnackbar("Selecione um hemocentro para continuar.", "#FF0000")
+            return
+        }
+
+        val calendario = Calendar.getInstance()
+        val ano = binding.datePicker.year
+        val mes = binding.datePicker.month
+        val dia = binding.datePicker.dayOfMonth
+        val hora = binding.timePicker.hour
+        val minuto = binding.timePicker.minute
+
+        calendario.set(ano, mes, dia, hora, minuto, 0)
+
+        val dataHoraAgendada = calendario.time
+        val agora = Date()
+
+        if (dataHoraAgendada.before(agora)) {
+            mostrarSnackbar("Escolha uma data e hora futuras para o agendamento.", "#FF0000")
+            return
+        }
+
+        val formatoData = SimpleDateFormat("dd/MM/yyyy", Locale("pt", "BR"))
+        val formatoHora = SimpleDateFormat("HH:mm", Locale("pt", "BR"))
+
+        val dataFormatada = formatoData.format(dataHoraAgendada)
+        val horaFormatada = formatoHora.format(dataHoraAgendada)
+
+        // Mostra um resumo antes de salvar
+        mostrarDialogConfirmacao(hemocentro, dataFormatada, horaFormatada)
+    }
+
+    // ---------------- Diálogo de Confirmação ----------------
+
+    private fun mostrarDialogConfirmacao(
+        hemocentro: Hemocentro,
+        dataFormatada: String,
+        horaFormatada: String
+    ) {
+        val enderecoResumo = buildString {
+            append(hemocentro.logradouro ?: "")
+            if (!hemocentro.numero.isNullOrBlank() && hemocentro.numero != "S/N") {
+                if (isNotEmpty()) append(", ")
+                append(hemocentro.numero)
+            }
+            if (hemocentro.cidade.isNotBlank() && hemocentro.uf.isNotBlank()) {
+                if (isNotEmpty()) append(" - ")
+                append("${hemocentro.cidade}/${hemocentro.uf}")
+            }
+        }
+
+        val mensagem = """
+            Confira os dados do seu agendamento:
+            
+            🏥 Hemocentro:
+            ${hemocentro.nome}
+            
+            📍 Endereço:
+            ${if (enderecoResumo.isBlank()) "Não informado" else enderecoResumo}
+            
+            📅 Data: $dataFormatada
+            ⏰ Horário: $horaFormatada
+            
+            Deseja confirmar o agendamento?
+        """.trimIndent()
+
+        val dialog = MaterialAlertDialogBuilder(this, R.style.CustomAlertDialogTheme)
+            .setTitle("Confirmar agendamento")
+            .setMessage(mensagem)
+            .setNegativeButton("Cancelar", null)
+            .setPositiveButton("Confirmar") { d, _ ->
+                salvarAgendamentoNoFirestore(hemocentro, dataFormatada, horaFormatada)
+                d.dismiss()
+            }
+            .create()
+
+        dialog.setOnShowListener {
+            val botaoConfirmar = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            val botaoCancelar = dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
+
+            botaoConfirmar?.setTextColor(
+                ContextCompat.getColor(this, R.color.vermelho_primario)
+            )
+            botaoCancelar?.setTextColor(
+                ContextCompat.getColor(this, R.color.vermelho_primario)
+            )
+        }
+
+        dialog.show()
+    }
+
+    // ---------------- Salvar no Firestore ----------------
+
+    private fun salvarAgendamentoNoFirestore(
+        hemocentro: Hemocentro,
+        dataFormatada: String,
+        horaFormatada: String
+    ) {
+        val usuario = auth.currentUser ?: run {
+            mostrarSnackbar("Erro: usuário não autenticado.", "#FF0000")
+            return
+        }
+
+        val agendamento = hashMapOf(
+            "hemocentroId" to hemocentro.id,
+            "hemocentro" to hemocentro.nome,
+            "data" to dataFormatada,
+            "hora" to horaFormatada,
+            "cidade" to hemocentro.cidade,
+            "uf" to hemocentro.uf,
+            "regiao" to hemocentro.regiao,
+            "endereco" to hemocentro.logradouro,
+            "numero" to hemocentro.numero,
+            "cep" to hemocentro.cep,
+            "telefone" to hemocentro.telefone,
+            "horarioFuncionamento" to hemocentro.horarioFuncionamento,
+            "statusHemocentro" to hemocentro.status,
+            "latitude" to hemocentro.latitude,
+            "longitude" to hemocentro.longitude,
+            "distanciaKm" to hemocentro.distanciaKm,
+            "status" to "Pendente",
+            "criadoEm" to com.google.firebase.firestore.FieldValue.serverTimestamp()
+        )
+
+        desabilitarBotaoAgendar()
+        mostrarSnackbar("Salvando agendamento...", "#9E9E9E")
+
+        firestore.collection("usuarios")
+            .document(usuario.uid)
+            .collection("agendamentos")
+            .add(agendamento)
+            .addOnSuccessListener {
+                habilitarBotaoAgendar()
+                mostrarDialogAgendamentoSucesso()
+            }
+            .addOnFailureListener { e ->
+                habilitarBotaoAgendar()
+                mostrarSnackbar(
+                    "Erro ao salvar agendamento: ${e.localizedMessage}",
+                    "#FF0000"
+                )
+            }
+    }
+
+    private fun mostrarDialogAgendamentoSucesso() {
+        val dialog = MaterialAlertDialogBuilder(this, R.style.CustomAlertDialogTheme)
+            .setTitle("Agendamento realizado!")
+            .setMessage(
+                "Seu agendamento foi registrado com sucesso. " +
+                        "Você poderá acompanhá-lo na tela de Meus Agendamentos."
+            )
+            .setPositiveButton("OK") { d, _ ->
+                d.dismiss()
+                finish()
+            }
+            .create()
+
+        dialog.setOnShowListener {
+            val botao = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
+            botao?.setTextColor(ContextCompat.getColor(this, R.color.vermelho_primario))
+        }
+
+        dialog.show()
+    }
+
+    private fun mostrarSnackbar(mensagem: String, corHex: String) {
+        val root = binding.root
+        val snack = Snackbar.make(root, mensagem, Snackbar.LENGTH_LONG)
+        snack.view.setBackgroundColor(Color.parseColor(corHex))
+        snack.setTextColor(ContextCompat.getColor(this, android.R.color.white))
+        snack.show()
+    }
+
+    // ---------------- Firestore: carregar hemocentros ----------------
+
     private fun carregarHemocentros() {
+        val temLocalizacaoUsuario = userLat != null && userLng != null
+
         firestore.collection("hemocentros")
             .get()
             .addOnSuccessListener { snapshot ->
                 todosHemocentros.clear()
 
-                val chavesVistas = mutableSetOf<String>() // para deduplicar (nome + cidade)
-
-                val temLocalizacaoUsuario = userLat != null && userLng != null
+                val chavesVistas = mutableSetOf<String>()
 
                 for (doc in snapshot) {
-
-                    // Cidade e UF
                     val cidade = doc.getString("cidade") ?: doc.getString("municipio")
-                    val uf = doc.getString("uf")?.uppercase(Locale.ROOT)
-                    val regiao = (doc.getString("regiao")
-                        ?: doc.getString("Regiao"))?.uppercase(Locale.ROOT)
+                    val uf = doc.getString("uf")?.uppercase(Locale("pt", "BR"))
+                    val regiao =
+                        doc.getString("regiao")?.uppercase(Locale("pt", "BR"))
+                            ?: doc.getString("Regiao")?.uppercase(Locale("pt", "BR"))
 
-                    if (cidade.isNullOrBlank() || uf.isNullOrBlank() || regiao.isNullOrBlank()) {
-                        continue
-                    }
+                    if (cidade.isNullOrBlank() || uf.isNullOrBlank() || regiao.isNullOrBlank()) continue
 
-                    // CEP (obrigatório, 8 dígitos)
                     val cepRaw = doc.getString("cep") ?: doc.getString("CEP")
                     val cep = cepRaw?.trim()
                     val cepLimpo = cep?.filter { it.isDigit() }
+                    if (cepLimpo.isNullOrBlank() || cepLimpo.length < 8) continue
 
-                    if (cepLimpo.isNullOrBlank() || cepLimpo.length < 8) {
-                        continue
-                    }
-
-                    // Fantasia x Razão Social
                     val fantasia = doc.getString("fantasia")
                     var nomeJuridico = doc.getString("nome")
 
@@ -282,7 +586,7 @@ class Agendamento : BaseActivity() {
                             "(?i)\\b(LTDA|Ltda|LTDA\\.|S/A|SA|S A|ME|EPP|EMPRESA|INDÚSTRIA|INDUSTRIA|COMÉRCIO|COMERCIO)\\b"
                         nomeJuridico = nomeJuridico
                             .replace(Regex(padraoJuridico), "")
-                            .replace(Regex("\\(.*?\\)"), "")   // remove texto entre parênteses
+                            .replace(Regex("\\(.*?\\)"), "")
                             .replace(Regex("\\s{2,}"), " ")
                             .trim()
                     }
@@ -299,8 +603,7 @@ class Agendamento : BaseActivity() {
 
                     if (nomeLimpo.isBlank()) continue
 
-                    // Remove hospitais / clínicas / laboratórios / etc.
-                    val nomeUpper = nomeLimpo.uppercase(Locale.ROOT)
+                    val nomeUpper = nomeLimpo.uppercase(Locale("pt", "BR"))
                     val termosBloqueados = listOf(
                         "HOSPITAL",
                         "CLINICA",
@@ -315,60 +618,34 @@ class Agendamento : BaseActivity() {
                         "MULTIHEMO",
                         "UNIHEMO"
                     )
-                    if (termosBloqueados.any { termo -> nomeUpper.contains(termo) }) {
-                        continue
-                    }
+                    if (termosBloqueados.any { termo -> nomeUpper.contains(termo) }) continue
 
-                    // Status
                     val statusRaw = doc.getString("status") ?: doc.getString("STATUS")
                     val status = statusRaw?.trim()
-                    val statusUpper = status?.uppercase(Locale.ROOT)
-
-                    // Remove unidades claramente inativas
+                    val statusUpper = status?.uppercase(Locale("pt", "BR"))
                     if (statusUpper != null) {
-                        val statusBloqueados = listOf(
-                            "INATIVO",
-                            "FECHADO",
-                            "BLOQUEADO",
-                            "DESATIVADO"
-                        )
-                        if (statusBloqueados.any { statusUpper.contains(it) }) {
-                            continue
-                        }
+                        val statusBloqueados =
+                            listOf("INATIVO", "FECHADO", "BLOQUEADO", "DESATIVADO")
+                        if (statusBloqueados.any { statusUpper.contains(it) }) continue
                     }
 
-                    // Deduplicar: mesmo nome + cidade
-                    val chave = nomeLimpo.uppercase(Locale.ROOT) + "|" +
-                            cidade.trim().uppercase(Locale.ROOT)
-                    if (chavesVistas.contains(chave)) {
-                        continue
-                    } else {
-                        chavesVistas.add(chave)
-                    }
+                    val chave = nomeLimpo.uppercase(Locale("pt", "BR")) + "|" +
+                            cidade.trim().uppercase(Locale("pt", "BR"))
+                    if (!chavesVistas.add(chave)) continue
 
                     val logradouro = doc.getString("logradouro")
                     val numero = doc.getString("numero") ?: doc.getString("NU_ENDERECO")
                     val telefone = doc.getString("telefone")
 
-                    // Horário de funcionamento (se tiver)
                     val horario = doc.getString("horario_funcionamento")
                         ?: doc.getString("horario")
                         ?: doc.getString("horarioFuncionamento")
 
-                    // Localização do hemocentro
-                    val lat = (doc.getDouble("latitude")
-                        ?: doc.getDouble("lat"))
-                    val lng = (doc.getDouble("longitude")
-                        ?: doc.getDouble("lng"))
+                    val latitude = doc.getDouble("latitude") ?: doc.getDouble("lat")
+                    val longitude = doc.getDouble("longitude") ?: doc.getDouble("lng")
 
-                    // Distância (se tivermos tudo)
-                    val distanciaKm = if (temLocalizacaoUsuario && lat != null && lng != null) {
-                        calcularDistanciaKm(
-                            userLat!!,
-                            userLng!!,
-                            lat,
-                            lng
-                        )
+                    val distanciaKm = if (temLocalizacaoUsuario && latitude != null && longitude != null) {
+                        calcularDistanciaKm(userLat!!, userLng!!, latitude, longitude)
                     } else {
                         null
                     }
@@ -385,8 +662,8 @@ class Agendamento : BaseActivity() {
                         cep = cep,
                         numero = numero,
                         horarioFuncionamento = horario,
-                        latitude = lat,
-                        longitude = lng,
+                        latitude = latitude,
+                        longitude = longitude,
                         distanciaKm = distanciaKm
                     )
 
@@ -394,340 +671,35 @@ class Agendamento : BaseActivity() {
                 }
 
                 if (todosHemocentros.isEmpty()) {
+                    atualizarSpinnerRegiao()
                     mostrarSnackbar(
-                        "Não foi possível carregar a lista de hemocentros.",
-                        "#FF0000"
+                        "Nenhum hemocentro disponível no momento. Tente novamente mais tarde.",
+                        "#9E9E9E"
                     )
-                    binding.btAgendar.isEnabled = false
                     return@addOnSuccessListener
                 }
 
-                // Preenche regiões
-                val regioes = todosHemocentros
-                    .map { it.regiao }
-                    .distinct()
-                    .sorted()
-
-                val listaRegioes = mutableListOf("Selecione a região")
-                listaRegioes.addAll(regioes)
-
-                val adapterRegiao = ArrayAdapter(
-                    this,
-                    R.layout.item_spinner_text,
-                    listaRegioes
-                ).apply {
-                    setDropDownViewResource(R.layout.item_spinner_dropdown_text)
+                if (userLat != null && userLng != null) {
+                    todosHemocentros.sortBy { it.distanciaKm ?: Double.MAX_VALUE }
+                } else {
+                    todosHemocentros.sortBy { it.nome.lowercase(Locale("pt", "BR")) }
                 }
 
-                binding.spinnerRegiao.adapter = adapterRegiao
-                binding.btAgendar.isEnabled = true
-            }
-            .addOnFailureListener { e ->
-                mostrarSnackbar(
-                    "Erro ao carregar hemocentros: ${e.localizedMessage}",
-                    "#FF0000"
-                )
-            }
-    }
-
-    // --------------------------------------------------------------------
-    // Atualização de UF / Cidade / Hemocentro
-    // --------------------------------------------------------------------
-    private fun atualizarUf(regiao: String) {
-        hemocentroSelecionado = null
-        binding.cardHemocentroInfo.visibility = View.GONE
-
-        val ufs = todosHemocentros
-            .filter { it.regiao == regiao }
-            .map { it.uf }
-            .distinct()
-            .sorted()
-
-        val listaUf = mutableListOf("Selecione o estado")
-        listaUf.addAll(ufs)
-
-        val adapterUf = ArrayAdapter(
-            this,
-            R.layout.item_spinner_text,
-            listaUf
-        ).apply {
-            setDropDownViewResource(R.layout.item_spinner_dropdown_text)
-        }
-
-        binding.spinnerUf.adapter = adapterUf
-        binding.spinnerCidade.adapter = ArrayAdapter(
-            this,
-            R.layout.item_spinner_text,
-            listOf("Selecione o estado")
-        )
-        binding.spinnerHemocentro.adapter = ArrayAdapter(
-            this,
-            R.layout.item_spinner_text,
-            listOf("Selecione a cidade")
-        )
-    }
-
-    private fun atualizarCidade(uf: String) {
-        hemocentroSelecionado = null
-        binding.cardHemocentroInfo.visibility = View.GONE
-
-        val cidades = todosHemocentros
-            .filter { it.uf == uf }
-            .map { it.cidade }
-            .distinct()
-            .sorted()
-
-        val listaCidades = mutableListOf("Selecione a cidade")
-        listaCidades.addAll(cidades)
-
-        val adapterCidade = ArrayAdapter(
-            this,
-            R.layout.item_spinner_text,
-            listaCidades
-        ).apply {
-            setDropDownViewResource(R.layout.item_spinner_dropdown_text)
-        }
-
-        binding.spinnerCidade.adapter = adapterCidade
-        binding.spinnerHemocentro.adapter = ArrayAdapter(
-            this,
-            R.layout.item_spinner_text,
-            listOf("Selecione o hemocentro")
-        )
-    }
-
-    private fun atualizarHemocentro(uf: String, cidade: String) {
-        hemocentroSelecionado = null
-        binding.cardHemocentroInfo.visibility = View.GONE
-
-        val hemocentrosCidade = todosHemocentros
-            .filter { it.uf == uf && it.cidade == cidade }
-
-        val listaNomes = mutableListOf("Selecione o hemocentro")
-        listaNomes.addAll(
-            hemocentrosCidade
-                .map { it.nome }
-                .distinct()
-                .sorted()
-        )
-
-        val adapterHemocentro = ArrayAdapter(
-            this,
-            R.layout.item_spinner_text,
-            listaNomes
-        ).apply {
-            setDropDownViewResource(R.layout.item_spinner_dropdown_text)
-        }
-
-        binding.spinnerHemocentro.adapter = adapterHemocentro
-    }
-
-    // --------------------------------------------------------------------
-    // Preencher CARD com dados do hemocentro
-    // (1, 2, 3, 4, 6, 7)
-    // --------------------------------------------------------------------
-    private fun preencherCardHemocentro(hemo: Hemocentro) {
-
-        binding.cardHemocentroInfo.visibility = View.VISIBLE
-
-        // 1) Nome
-        binding.txtNomeHemo.text = hemo.nome
-
-        // 2) Endereço completo
-        val endereco = buildString {
-            append(hemo.logradouro ?: "Endereço não informado")
-            if (!hemo.numero.isNullOrBlank() && hemo.numero != "S/N") {
-                append(", ${hemo.numero}")
-            }
-            append("\n${hemo.cidade} - ${hemo.uf}")
-            if (!hemo.cep.isNullOrBlank()) {
-                append("\nCEP: ${hemo.cep}")
-            }
-        }
-        binding.txtEnderecoHemo.text = endereco
-
-        // 3) Telefone
-        binding.txtTelefoneHemo.text =
-            "Telefone: " + (hemo.telefone ?: "Não informado")
-
-        // 4) Horário de funcionamento
-        binding.txtHorarioHemo.text =
-            "Horário: " + (hemo.horarioFuncionamento ?: "Não informado")
-
-        // 6) Status
-        binding.txtStatusHemo.text =
-            "Status: " + (hemo.status ?: "Não informado")
-
-        // 7) Distância
-        val distanciaStr = hemo.distanciaKm?.let {
-            String.format(Locale("pt", "BR"), "%.1f km", it)
-        } ?: "--"
-        binding.txtDistanciaHemo.text = "Distância: $distanciaStr"
-    }
-
-    // --------------------------------------------------------------------
-    // Confirmação de agendamento
-    // --------------------------------------------------------------------
-    private fun confirmarAgendamento() {
-        val usuario = auth.currentUser
-        if (usuario == null) {
-            mostrarSnackbar("Usuário não autenticado.", "#FF0000")
-            return
-        }
-
-        val hemo = hemocentroSelecionado
-        if (hemo == null) {
-            mostrarSnackbar("Selecione um hemocentro.", "#FF0000")
-            return
-        }
-
-        // Data
-        val dia = binding.datePicker.dayOfMonth
-        val mes = binding.datePicker.month + 1
-        val ano = binding.datePicker.year
-        val data = "%02d/%02d/%04d".format(dia, mes, ano)
-
-        // Hora (08h às 17h)
-        val hora: Int
-        val minuto: Int
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            hora = binding.timePicker.hour
-            minuto = binding.timePicker.minute
-        } else {
-            @Suppress("DEPRECATION")
-            hora = binding.timePicker.currentHour
-            @Suppress("DEPRECATION")
-            minuto = binding.timePicker.currentMinute
-        }
-
-        if (hora !in 8..17) {
-            mostrarSnackbar("Agendamento permitido das 08h às 17h.", "#FF0000")
-            return
-        }
-
-        val horaTxt = "%02d:%02d".format(hora, minuto)
-
-        val enderecoLinha = buildString {
-            if (!hemo.logradouro.isNullOrBlank()) {
-                append(hemo.logradouro)
-                if (!hemo.numero.isNullOrBlank() && hemo.numero != "S/N") {
-                    append(", ")
-                    append(hemo.numero)
-                }
-            } else {
-                append("Endereço não informado")
-            }
-        }
-
-        val resumo = """
-            Confirme o agendamento:
-            
-            🏥 ${hemo.nome}
-            📅 $data às $horaTxt
-            📍 $enderecoLinha
-            🏙️ ${hemo.cidade} - ${hemo.uf}
-            📞 ${hemo.telefone ?: "Não informado"}
-        """.trimIndent()
-
-        val dialog = MaterialAlertDialogBuilder(this, R.style.CustomAlertDialogTheme)
-            .setTitle("Confirmar agendamento")
-            .setMessage(resumo)
-            .setNegativeButton("Editar", null)
-            .setPositiveButton("Confirmar") { _, _ ->
-                salvarAgendamento(hemo, data, horaTxt)
-            }
-            .create()
-
-        dialog.setOnShowListener { estilizarDialog(dialog) }
-        dialog.show()
-    }
-
-    // --------------------------------------------------------------------
-    // Salvar no Firestore
-    // --------------------------------------------------------------------
-    private fun salvarAgendamento(hemo: Hemocentro, data: String, hora: String) {
-        val usuario = auth.currentUser ?: return
-
-        val agendamento = hashMapOf(
-            "hemocentroId" to hemo.id,
-            "hemocentro" to hemo.nome,
-            "data" to data,
-            "hora" to hora,
-            "cidade" to hemo.cidade,
-            "uf" to hemo.uf,
-            "regiao" to hemo.regiao,
-            "endereco" to hemo.logradouro,
-            "numero" to hemo.numero,
-            "cep" to hemo.cep,
-            "telefone" to hemo.telefone,
-            "horarioFuncionamento" to hemo.horarioFuncionamento,
-            "statusHemocentro" to hemo.status,
-            "latitude" to hemo.latitude,
-            "longitude" to hemo.longitude,
-            "distanciaKm" to hemo.distanciaKm,
-            "status" to "Pendente",
-            "criadoEm" to FieldValue.serverTimestamp()
-        )
-
-        firestore.collection("usuarios")
-            .document(usuario.uid)
-            .collection("agendamentos")
-            .add(agendamento)
-            .addOnSuccessListener {
-                MaterialAlertDialogBuilder(this, R.style.CustomAlertDialogTheme)
-                    .setTitle("Agendado!")
-                    .setMessage("Seu agendamento foi realizado com sucesso! 🎉")
-                    .setPositiveButton("OK") { _, _ -> finish() }
-                    .show()
+                atualizarSpinnerRegiao()
             }
             .addOnFailureListener {
-                mostrarSnackbar("Erro ao salvar agendamento.", "#FF0000")
+                mostrarSnackbar("Erro ao carregar hemocentros.", "#FF0000")
+                atualizarSpinnerRegiao()
             }
     }
 
-    // --------------------------------------------------------------------
-    // Helpers de UI
-    // --------------------------------------------------------------------
-    private fun mostrarSnackbar(msg: String, corHex: String) {
-        Snackbar.make(binding.root, msg, Snackbar.LENGTH_LONG)
-            .setBackgroundTint(Color.parseColor(corHex))
-            .setTextColor(ContextCompat.getColor(this, android.R.color.white))
-            .show()
-    }
-
-    private fun estilizarDialog(dialog: AlertDialog) {
-        val primaryColor = ContextCompat.getColor(this, R.color.vermelho_primario)
-        val white = ContextCompat.getColor(this, android.R.color.white)
-
-        val botaoPositivo = dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-        val botaoNegativo = dialog.getButton(AlertDialog.BUTTON_NEGATIVE)
-
-        botaoPositivo?.apply {
-            setBackgroundColor(primaryColor)
-            setTextColor(white)
-            textSize = 14f
-            isAllCaps = false
-            setPadding(40, 10, 40, 10)
-        }
-
-        botaoNegativo?.apply {
-            setBackgroundColor(Color.TRANSPARENT)
-            setTextColor(primaryColor)
-            textSize = 14f
-            isAllCaps = false
-        }
-    }
-
-    // --------------------------------------------------------------------
-    // Cálculo de distância entre dois pontos (km)
-    // --------------------------------------------------------------------
     private fun calcularDistanciaKm(
         lat1: Double,
         lon1: Double,
         lat2: Double,
         lon2: Double
     ): Double {
-        val R = 6371.0 // raio da Terra em km
+        val R = 6371.0
         val dLat = Math.toRadians(lat2 - lat1)
         val dLon = Math.toRadians(lon2 - lon1)
         val a = sin(dLat / 2).pow(2.0) +

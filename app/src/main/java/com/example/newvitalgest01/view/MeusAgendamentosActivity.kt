@@ -2,25 +2,34 @@ package com.example.newvitalgest01.view
 
 import android.os.Build
 import android.os.Bundle
+import android.view.View
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.newvitalgest01.R
 import com.example.newvitalgest01.databinding.ActivityMeusAgendamentosBinding
+import com.example.newvitalgest01.domain.model.Agendamento
+import com.example.newvitalgest01.ui.meus_agendamentos.MeusAgendamentosViewModel
+import com.example.newvitalgest01.ui.meus_agendamentos.MeusAgendamentosViewModelFactory
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.Query
+import kotlinx.coroutines.flow.collectLatest
 import java.text.SimpleDateFormat
 import java.util.*
 
 class MeusAgendamentosActivity : BaseActivity() {
 
     private lateinit var binding: ActivityMeusAgendamentosBinding
-    private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
-    private val firestore: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
 
+    // ViewModel (MVVM)
+    private val viewModel: MeusAgendamentosViewModel by viewModels {
+        MeusAgendamentosViewModelFactory(applicationContext)
+    }
+
+    // Listas separadas por aba (como antes)
     private val listaAgendamentosAtivos = mutableListOf<AgendamentoItem>()
     private val listaAgendamentosCancelados = mutableListOf<AgendamentoItem>()
     private val listaAgendamentosHistorico = mutableListOf<AgendamentoItem>()
@@ -56,18 +65,24 @@ class MeusAgendamentosActivity : BaseActivity() {
 
         setupRecycler()
         setupUI()
+        observarEstadoViewModel()
     }
 
     override fun onResume() {
         super.onResume()
-        carregarAgendamentos()
+        // Recarrega via ViewModel (pode ser local/remoto dependendo da estratégia)
+        viewModel.recarregar(forceRemote = false)
     }
+
+    // ---------------- RECYCLER / ADAPTER ----------------
 
     private fun setupRecycler() {
         adapter = MeusAgendamentosAdapter(this, emptyList())
         binding.recyclerMeusAgendamentos.layoutManager = LinearLayoutManager(this)
         binding.recyclerMeusAgendamentos.adapter = adapter
     }
+
+    // ---------------- UI / ABAS / BOTÕES ----------------
 
     private fun setupUI() {
         // Botão voltar (bottom bar)
@@ -96,101 +111,110 @@ class MeusAgendamentosActivity : BaseActivity() {
         }
     }
 
-    private fun carregarAgendamentos() {
-        val usuario = auth.currentUser
-        if (usuario == null) {
-            binding.txtMensagemVazio.text = "Você precisa estar logado para ver seus agendamentos."
-            binding.txtMensagemVazio.visibility = android.view.View.VISIBLE
-            binding.recyclerMeusAgendamentos.visibility = android.view.View.GONE
-            adapter.atualizarLista(emptyList())
-            return
-        }
+    // ---------------- OBSERVANDO VIEWMODEL ----------------
 
-        firestore.collection("usuarios")
-            .document(usuario.uid)
-            .collection("agendamentos")
-            .orderBy("criadoEm", Query.Direction.DESCENDING)
-            .get()
-            .addOnSuccessListener { snapshot ->
-                listaAgendamentosAtivos.clear()
-                listaAgendamentosCancelados.clear()
-                listaAgendamentosHistorico.clear()
+    private fun observarEstadoViewModel() {
+        lifecycleScope.launchWhenStarted {
+            viewModel.uiState.collectLatest { state ->
+                // Loading simples: podemos mostrar um texto "Carregando..."
+                if (state.isLoading) {
+                    binding.txtMensagemVazio.text = "Carregando seus agendamentos..."
+                    binding.txtMensagemVazio.visibility = View.VISIBLE
+                    binding.recyclerMeusAgendamentos.visibility = View.GONE
+                }
 
-                if (snapshot.isEmpty) {
-                    binding.txtMensagemVazio.text = "Você ainda não possui agendamentos."
-                    binding.txtMensagemVazio.visibility = android.view.View.VISIBLE
-                    binding.recyclerMeusAgendamentos.visibility = android.view.View.GONE
+                // Se veio erro
+                if (state.error != null) {
+                    binding.txtMensagemVazio.text = state.error
+                    binding.txtMensagemVazio.visibility = View.VISIBLE
+                    binding.recyclerMeusAgendamentos.visibility = View.GONE
                     adapter.atualizarLista(emptyList())
-                } else {
-                    val agora = Date()
+                    return@collectLatest
+                }
 
-                    for (doc in snapshot.documents) {
-                        val id = doc.id
-                        val hemocentro = doc.getString("hemocentro") ?: "Hemocentro"
-                        val data = doc.getString("data") ?: ""
-                        val hora = doc.getString("hora") ?: ""
-                        val endereco = doc.getString("endereco") ?: ""
-                        val telefone = doc.getString("telefone") ?: ""
-                        val statusOriginal = doc.getString("status") ?: "Pendente"
+                // Quando terminar de carregar sem erro
+                if (!state.isLoading && state.error == null) {
+                    val agendamentos = state.agendamentos
 
-                        val item = AgendamentoItem(
-                            id = id,
-                            hemocentro = hemocentro,
-                            data = data,
-                            hora = hora,
-                            endereco = endereco,
-                            telefone = telefone,
-                            status = statusOriginal
-                        )
+                    listaAgendamentosAtivos.clear()
+                    listaAgendamentosCancelados.clear()
+                    listaAgendamentosHistorico.clear()
 
-                        val statusNormalizado = statusOriginal.trim()
-
-                        // Verifica se data/hora já passou
-                        val dataHoraStr = "$data $hora"
-                        val dataAgendada = try {
-                            formatoDataHora.parse(dataHoraStr)
-                        } catch (e: Exception) {
-                            null
-                        }
-                        val expirado = dataAgendada != null && dataAgendada.before(agora)
-
-                        when {
-                            statusNormalizado.equals("Cancelado", ignoreCase = true) -> {
-                                listaAgendamentosCancelados.add(item)
-                            }
-                            statusNormalizado.equals("Concluído", ignoreCase = true) || expirado -> {
-                                // Histórico: Concluídos ou data passada (expirado)
-                                listaAgendamentosHistorico.add(item)
-                            }
-                            else -> {
-                                // Ativos: Pendente / Confirmado no futuro
-                                listaAgendamentosAtivos.add(item)
-                            }
-                        }
+                    if (agendamentos.isEmpty()) {
+                        binding.txtMensagemVazio.text = "Você ainda não possui agendamentos."
+                        binding.txtMensagemVazio.visibility = View.VISIBLE
+                        binding.recyclerMeusAgendamentos.visibility = View.GONE
+                        adapter.atualizarLista(emptyList())
+                    } else {
+                        preencherListasPorStatusEData(agendamentos)
+                        atualizarListaPorAba()
                     }
-
-                    atualizarListaPorAba()
                 }
             }
-            .addOnFailureListener {
-                binding.txtMensagemVazio.text = "Erro ao carregar agendamentos."
-                binding.txtMensagemVazio.visibility = android.view.View.VISIBLE
-                binding.recyclerMeusAgendamentos.visibility = android.view.View.GONE
-                adapter.atualizarLista(emptyList())
-            }
+        }
     }
+
+    /**
+     * Converte a lista de Agendamento (domínio) em listas de AgendamentoItem
+     * separadas por: Ativos, Cancelados e Histórico (Concluídos/Expirados)
+     * usando a mesma regra que você já tinha.
+     */
+    private fun preencherListasPorStatusEData(agendamentos: List<Agendamento>) {
+        val agora = Date()
+
+        for (ag in agendamentos) {
+            val item = AgendamentoItem(
+                id = ag.id,
+                hemocentro = ag.hemocentro,
+                data = ag.data,
+                hora = ag.hora,
+                endereco = ag.endereco,
+                telefone = ag.telefone,
+                status = ag.status
+            )
+
+            val statusNormalizado = ag.status.trim()
+
+            // Verifica se data/hora já passou
+            val dataHoraStr = "${ag.data} ${ag.hora}"
+            val dataAgendada = try {
+                formatoDataHora.parse(dataHoraStr)
+            } catch (e: Exception) {
+                null
+            }
+            val expirado = dataAgendada != null && dataAgendada.before(agora)
+
+            when {
+                statusNormalizado.equals("Cancelado", ignoreCase = true) -> {
+                    listaAgendamentosCancelados.add(item)
+                }
+
+                statusNormalizado.equals("Concluído", ignoreCase = true) || expirado -> {
+                    // Histórico: Concluídos ou data passada (expirado)
+                    listaAgendamentosHistorico.add(item)
+                }
+
+                else -> {
+                    // Ativos: Pendente / Confirmado no futuro
+                    listaAgendamentosAtivos.add(item)
+                }
+            }
+        }
+    }
+
+    // ---------------- ATUALIZAÇÃO POR ABA ----------------
 
     private fun atualizarListaPorAba() {
         when (abaAtual) {
             AbaAgendamento.ATIVOS -> {
                 if (listaAgendamentosAtivos.isEmpty()) {
                     binding.txtMensagemVazio.text = "Você ainda não possui agendamentos ativos."
-                    binding.txtMensagemVazio.visibility = android.view.View.VISIBLE
-                    binding.recyclerMeusAgendamentos.visibility = android.view.View.GONE
+                    binding.txtMensagemVazio.visibility = View.VISIBLE
+                    binding.recyclerMeusAgendamentos.visibility = View.GONE
                     adapter.atualizarLista(emptyList())
                 } else {
-                    binding.txtMensagemVazio.visibility = android.view.View.GONE
-                    binding.recyclerMeusAgendamentos.visibility = android.view.View.VISIBLE
+                    binding.txtMensagemVazio.visibility = View.GONE
+                    binding.recyclerMeusAgendamentos.visibility = View.VISIBLE
                     adapter.atualizarLista(listaAgendamentosAtivos)
                     animarLista()
                 }
@@ -199,12 +223,12 @@ class MeusAgendamentosActivity : BaseActivity() {
             AbaAgendamento.CANCELADOS -> {
                 if (listaAgendamentosCancelados.isEmpty()) {
                     binding.txtMensagemVazio.text = "Você ainda não possui agendamentos cancelados."
-                    binding.txtMensagemVazio.visibility = android.view.View.VISIBLE
-                    binding.recyclerMeusAgendamentos.visibility = android.view.View.GONE
+                    binding.txtMensagemVazio.visibility = View.VISIBLE
+                    binding.recyclerMeusAgendamentos.visibility = View.GONE
                     adapter.atualizarLista(emptyList())
                 } else {
-                    binding.txtMensagemVazio.visibility = android.view.View.GONE
-                    binding.recyclerMeusAgendamentos.visibility = android.view.View.VISIBLE
+                    binding.txtMensagemVazio.visibility = View.GONE
+                    binding.recyclerMeusAgendamentos.visibility = View.VISIBLE
                     adapter.atualizarLista(listaAgendamentosCancelados)
                     animarLista()
                 }
@@ -213,12 +237,12 @@ class MeusAgendamentosActivity : BaseActivity() {
             AbaAgendamento.HISTORICO -> {
                 if (listaAgendamentosHistorico.isEmpty()) {
                     binding.txtMensagemVazio.text = "Você ainda não possui histórico de agendamentos."
-                    binding.txtMensagemVazio.visibility = android.view.View.VISIBLE
-                    binding.recyclerMeusAgendamentos.visibility = android.view.View.GONE
+                    binding.txtMensagemVazio.visibility = View.VISIBLE
+                    binding.recyclerMeusAgendamentos.visibility = View.GONE
                     adapter.atualizarLista(emptyList())
                 } else {
-                    binding.txtMensagemVazio.visibility = android.view.View.GONE
-                    binding.recyclerMeusAgendamentos.visibility = android.view.View.VISIBLE
+                    binding.txtMensagemVazio.visibility = View.GONE
+                    binding.recyclerMeusAgendamentos.visibility = View.VISIBLE
                     adapter.atualizarLista(listaAgendamentosHistorico)
                     animarLista()
                 }

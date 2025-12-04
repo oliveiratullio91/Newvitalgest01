@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     // Aplica o plugin do Firebase (configurado no build.gradle.kts da raiz)
     id("com.google.gms.google-services")
+    id("kotlin-kapt")
 }
 
 android {
@@ -70,6 +71,12 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
     implementation("com.google.android.gms:play-services-auth:21.4.0")
     implementation("com.google.firebase:firebase-auth:24.0.1")
+
+    val roomVersion = "2.6.1"
+
+    implementation("androidx.room:room-runtime:$roomVersion")
+    kapt("androidx.room:room-compiler:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")
 
     // --- Testes (padrão do template) ---
     testImplementation("junit:junit:4.13.2")

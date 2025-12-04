@@ -97,12 +97,33 @@
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Lista de hemocentros -->
+            <!-- Seção de Favoritos -->
+            <TextView
+                android:id="@+id/txtTituloFavoritos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="⭐ Hemocentros favoritos"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black"
+                android:paddingBottom="8dp"
+                android:paddingTop="4dp"
+                android:visibility="gone" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerFavoritos"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:visibility="gone" />
+
+            <!-- Lista de hemocentros (resultado dos filtros) -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerHemocentros"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:nestedScrollingEnabled="false" />
+                android:nestedScrollingEnabled="false"
+                android:visibility="gone" />
 
             <!-- Botão Voltar -->
             <Button

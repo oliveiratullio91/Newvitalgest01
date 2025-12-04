@@ -2,29 +2,34 @@ package com.example.newvitalgest01.view
 
 import android.content.Context
 import android.content.Intent
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.*
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.newvitalgest01.R
+import com.example.newvitalgest01.domain.model.Hemocentro
+import com.example.newvitalgest01.ui.hemocentros.HemocentrosProximosViewModel
+import com.example.newvitalgest01.ui.hemocentros.HemocentrosProximosViewModelFactory
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.DocumentSnapshot
-import android.graphics.Color
-import android.view.LayoutInflater
-import android.view.ViewGroup
-import android.content.res.ColorStateList
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 // ---------------------------
-// MODELO DE DADOS
+// MODELO DE DADOS DA TELA
 // ---------------------------
 data class HemocentroListaItem(
     val id: String,
@@ -37,20 +42,36 @@ data class HemocentroListaItem(
     val latitude: String?,
     val longitude: String?,
     val regiao: String?,
-    val status: String?
+    val status: String?,
+    var isFavorito: Boolean = false
 )
 
 class HemocentrosProximosActivity : BaseActivity() {
 
-    private lateinit var recyclerView: RecyclerView
-    private lateinit var adapter: HemocentroAdapter
+    private lateinit var recyclerHemocentros: RecyclerView
+    private lateinit var recyclerFavoritos: RecyclerView
+    private lateinit var adapterHemocentros: HemocentroAdapter
+    private lateinit var adapterFavoritos: HemocentroAdapter
 
     private lateinit var spinnerRegiaoFiltro: Spinner
     private lateinit var spinnerUfFiltro: Spinner
     private lateinit var spinnerCidadeFiltro: Spinner
+    private lateinit var txtTituloFavoritos: TextView
 
+    // Controle de exibição da lista principal
+    private var mostrarListaPrincipal: Boolean = false
+
+    // Flag para saber se os filtros já terminaram a configuração inicial
+    private var filtrosProntos: Boolean = false
+
+    // Fonte única de verdade da tela
     private val listaHemocentros = mutableListOf<HemocentroListaItem>()
-    private val firestore: FirebaseFirestore by lazy { FirebaseFirestore.getInstance() }
+
+    private val prefs by lazy { getSharedPreferences("hemocentros_prefs", Context.MODE_PRIVATE) }
+
+    private val viewModel: HemocentrosProximosViewModel by viewModels {
+        HemocentrosProximosViewModelFactory(applicationContext)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,7 +79,6 @@ class HemocentrosProximosActivity : BaseActivity() {
 
         supportActionBar?.hide()
 
-        // Cores da status bar / nav bar
         window.statusBarColor = ContextCompat.getColor(this, R.color.fundo_claro)
         window.navigationBarColor = ContextCompat.getColor(this, R.color.fundo_claro)
 
@@ -73,114 +93,175 @@ class HemocentrosProximosActivity : BaseActivity() {
                 window.decorView.systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         }
 
-        recyclerView = findViewById(R.id.recyclerHemocentros)
+        recyclerHemocentros = findViewById(R.id.recyclerHemocentros)
+        recyclerFavoritos = findViewById(R.id.recyclerFavoritos)
         spinnerRegiaoFiltro = findViewById(R.id.spinnerRegiaoFiltro)
         spinnerUfFiltro = findViewById(R.id.spinnerUfFiltro)
         spinnerCidadeFiltro = findViewById(R.id.spinnerCidadeFiltro)
+        txtTituloFavoritos = findViewById(R.id.txtTituloFavoritos)
 
-        recyclerView.layoutManager = LinearLayoutManager(this)
-        adapter = HemocentroAdapter(this, emptyList())
-        recyclerView.adapter = adapter
+        recyclerHemocentros.layoutManager = LinearLayoutManager(this)
+        recyclerFavoritos.layoutManager =
+            LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
 
-        val btnVoltar = findViewById<Button>(R.id.btnVoltar)
-        btnVoltar.setOnClickListener { finish() }
+        // Garante que começa invisível, além do XML
+        recyclerHemocentros.visibility = View.GONE
 
-        carregarHemocentros()
+        adapterHemocentros = HemocentroAdapter(this, emptyList()) { id -> onFavoritoClick(id) }
+        adapterFavoritos = HemocentroAdapter(this, emptyList()) { id -> onFavoritoClick(id) }
+
+        recyclerHemocentros.adapter = adapterHemocentros
+        recyclerFavoritos.adapter = adapterFavoritos
+
+        findViewById<Button>(R.id.btnVoltar).setOnClickListener { finish() }
+
+        observarViewModel()
+        viewModel.carregarHemocentros()
     }
 
     // ---------------------------
-    // Função segura para ler String ou Number do Firestore
+    // SharedPreferences helpers
     // ---------------------------
-    private fun getStringSafe(doc: DocumentSnapshot, campo: String): String? {
-        val valor = doc.get(campo)
-        return when (valor) {
-            is String -> valor
-            is Number -> valor.toString()
-            else -> null
+    private fun carregarIdsFavoritos(): Set<String> {
+        return prefs.getStringSet("favoritos_ids", emptySet()) ?: emptySet()
+    }
+
+    private fun salvarIdsFavoritos(ids: Set<String>) {
+        prefs.edit().putStringSet("favoritos_ids", ids).apply()
+    }
+
+    // ---------------------------
+    // Integração com ViewModel
+    // ---------------------------
+    private fun observarViewModel() {
+        lifecycleScope.launch {
+            viewModel.uiState.collectLatest { state ->
+                if (state.isLoading) {
+                    // colocar loading se quiser
+                }
+
+                state.error?.let { erro ->
+                    mostrarSnackbar(erro, "#FF0000")
+                }
+
+                if (!state.isLoading) {
+                    atualizarListaAPartirDoEstado(state.hemocentros)
+                }
+            }
+        }
+    }
+
+    private fun atualizarListaAPartirDoEstado(hemocentrosDomain: List<Hemocentro>) {
+        listaHemocentros.clear()
+
+        if (hemocentrosDomain.isEmpty()) {
+            adapterHemocentros.atualizarLista(emptyList())
+            recyclerHemocentros.visibility = View.GONE
+            txtTituloFavoritos.visibility = View.GONE
+            recyclerFavoritos.visibility = View.GONE
+            return
+        }
+
+        val idsFavoritos = carregarIdsFavoritos()
+
+        listaHemocentros.addAll(
+            hemocentrosDomain.map { hemo ->
+                val enderecoCompleto = buildString {
+                    append(hemo.logradouro ?: "")
+                    val numero = hemo.numero
+                    if (!numero.isNullOrBlank() && numero != "S/N") {
+                        if (isNotEmpty()) append(", ")
+                        append(numero)
+                    }
+                }
+
+                HemocentroListaItem(
+                    id = hemo.id,
+                    nome = hemo.nome,
+                    endereco = enderecoCompleto,
+                    cidade = hemo.cidade,
+                    uf = hemo.uf,
+                    cep = hemo.cep,
+                    telefone = hemo.telefone,
+                    latitude = hemo.latitude?.toString(),
+                    longitude = hemo.longitude?.toString(),
+                    regiao = hemo.regiao,
+                    status = hemo.status,
+                    isFavorito = idsFavoritos.contains(hemo.id)
+                )
+            }
+        )
+
+        listaHemocentros.sortBy { it.nome.lowercase() }
+
+        configurarFiltros()
+        animarListaPrincipal()
+    }
+
+    // ---------------------------
+    // Clique na estrela
+    // ---------------------------
+    private fun onFavoritoClick(hemocentroId: String) {
+        for (i in listaHemocentros.indices) {
+            val atual = listaHemocentros[i]
+            if (atual.id == hemocentroId) {
+                listaHemocentros[i] = atual.copy(isFavorito = !atual.isFavorito)
+                break
+            }
+        }
+
+        val idsFavoritos = listaHemocentros
+            .filter { it.isFavorito }
+            .map { it.id }
+            .toSet()
+        salvarIdsFavoritos(idsFavoritos)
+
+        atualizarListasVisiveis()
+    }
+
+    // ---------------------------
+    // Atualiza lista principal + favoritos respeitando filtros
+    // ---------------------------
+    private fun atualizarListasVisiveis() {
+        val regiaoSel = spinnerRegiaoFiltro.selectedItem as? String ?: "Todas"
+        val ufSel = spinnerUfFiltro.selectedItem as? String ?: "Todos"
+        val cidadeSel = spinnerCidadeFiltro.selectedItem as? String ?: "Todas"
+
+        val listaFiltrada = listaHemocentros.filter { item ->
+            (regiaoSel == "Todas" || item.regiao == regiaoSel) &&
+                    (ufSel == "Todos" || item.uf == ufSel) &&
+                    (cidadeSel == "Todas" || item.cidade == cidadeSel)
+        }
+
+        // Lista principal só aparece quando o usuário interage com os filtros
+        if (mostrarListaPrincipal && listaFiltrada.isNotEmpty()) {
+            recyclerHemocentros.visibility = View.VISIBLE
+            adapterHemocentros.atualizarLista(listaFiltrada)
+        } else {
+            recyclerHemocentros.visibility = View.GONE
+            adapterHemocentros.atualizarLista(emptyList())
+        }
+
+        // Card de favoritos é sempre atualizado
+        val favoritos = listaHemocentros.filter { it.isFavorito }
+        if (favoritos.isEmpty()) {
+            txtTituloFavoritos.visibility = View.GONE
+            recyclerFavoritos.visibility = View.GONE
+            adapterFavoritos.atualizarLista(emptyList())
+        } else {
+            txtTituloFavoritos.visibility = View.VISIBLE
+            recyclerFavoritos.visibility = View.VISIBLE
+            adapterFavoritos.atualizarLista(favoritos)
         }
     }
 
     // ---------------------------
-    // CARREGAR DADOS DO FIRESTORE
-    // ---------------------------
-    private fun carregarHemocentros() {
-        firestore.collection("hemocentros")
-            .get()
-            .addOnSuccessListener { snapshot ->
-                listaHemocentros.clear()
-
-                for (doc in snapshot) {
-
-                    val fantasia = doc.getString("fantasia")
-                    val nomeJuridico = doc.getString("nome")
-                    val nomeExibicao = when {
-                        !fantasia.isNullOrBlank() -> fantasia
-                        !nomeJuridico.isNullOrBlank() -> nomeJuridico
-                        else -> "Hemocentro"
-                    }
-
-                    val logradouro = doc.getString("logradouro") ?: ""
-                    val numero =
-                        doc.getString("numero")
-                            ?: doc.getString("NU_ENDERECO")
-                            ?: ""
-
-                    val enderecoCompleto = buildString {
-                        append(logradouro)
-                        if (numero.isNotBlank() && numero != "S/N") {
-                            if (isNotEmpty()) append(", ")
-                            append(numero)
-                        }
-                    }
-
-                    val cidade = doc.getString("cidade") ?: doc.getString("municipio")
-                    val uf = doc.getString("uf")
-                    val cep = doc.getString("cep") ?: doc.getString("CEP")
-                    val telefone = doc.getString("telefone")
-                    val latitude = getStringSafe(doc, "latitude") ?: getStringSafe(doc, "Latitude")
-                    val longitude = getStringSafe(doc, "longitude") ?: getStringSafe(doc, "Longitude")
-                    val regiao = doc.getString("regiao") ?: doc.getString("Regiao")
-                    val status = doc.getString("status") ?: doc.getString("STATUS")
-
-                    listaHemocentros.add(
-                        HemocentroListaItem(
-                            id = doc.id,
-                            nome = nomeExibicao,
-                            endereco = enderecoCompleto,
-                            cidade = cidade,
-                            uf = uf,
-                            cep = cep,
-                            telefone = telefone,
-                            latitude = latitude,
-                            longitude = longitude,
-                            regiao = regiao,
-                            status = status
-                        )
-                    )
-                }
-
-                // Ordena por nome
-                listaHemocentros.sortBy { it.nome.lowercase() }
-
-                // Mostra tudo inicialmente
-                adapter.atualizarLista(listaHemocentros)
-
-                if (listaHemocentros.isEmpty()) {
-                    mostrarSnackbar("Não há hemocentros cadastrados.", "#FF0000")
-                } else {
-                    configurarFiltros()
-                }
-            }
-            .addOnFailureListener { e ->
-                mostrarSnackbar("Erro ao carregar hemocentros: ${e.localizedMessage}", "#FF0000")
-            }
-    }
-
-    // ---------------------------
-    // CONFIGURAR FILTROS (REGIÃO / UF / CIDADE)
+    // Filtros
     // ---------------------------
     private fun configurarFiltros() {
-        // REGIÃO
+        filtrosProntos = false
+        mostrarListaPrincipal = false
+
         val regioes = listaHemocentros
             .mapNotNull { it.regiao }
             .distinct()
@@ -188,12 +269,10 @@ class HemocentrosProximosActivity : BaseActivity() {
 
         val adapterRegiao = ArrayAdapter(
             this,
-            R.layout.item_spinner_text,                 // item selecionado com texto preto/fundo branco
+            R.layout.item_spinner_text,
             listOf("Todas") + regioes
         )
-        adapterRegiao.setDropDownViewResource(
-            R.layout.item_spinner_dropdown_text        // dropdown com texto preto/fundo branco
-        )
+        adapterRegiao.setDropDownViewResource(R.layout.item_spinner_dropdown_text)
         spinnerRegiaoFiltro.adapter = adapterRegiao
 
         spinnerRegiaoFiltro.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -203,9 +282,12 @@ class HemocentrosProximosActivity : BaseActivity() {
                 position: Int,
                 id: Long
             ) {
+                if (!filtrosProntos) return
+
                 val regiaoSel = parent.getItemAtPosition(position) as String
                 atualizarUfFiltro(regiaoSel)
-                filtrarLista()
+                mostrarListaPrincipal = true
+                atualizarListasVisiveis()
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {}
@@ -218,9 +300,12 @@ class HemocentrosProximosActivity : BaseActivity() {
                 position: Int,
                 id: Long
             ) {
+                if (!filtrosProntos) return
+
                 val ufSel = parent.getItemAtPosition(position) as String
                 atualizarCidadeFiltro(ufSel)
-                filtrarLista()
+                mostrarListaPrincipal = true
+                atualizarListasVisiveis()
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {}
@@ -233,15 +318,23 @@ class HemocentrosProximosActivity : BaseActivity() {
                 position: Int,
                 id: Long
             ) {
-                filtrarLista()
+                if (!filtrosProntos) return
+
+                mostrarListaPrincipal = true
+                atualizarListasVisiveis()
             }
 
             override fun onNothingSelected(parent: AdapterView<*>) {}
         }
 
-        // Inicia UFs/cidades como "Todos"
+        // Config inicial: essas chamadas não disparam a lista porque filtrosProntos ainda é false
         atualizarUfFiltro("Todas")
         atualizarCidadeFiltro("Todos")
+
+        filtrosProntos = true
+
+        // Primeira exibição: apenas favoritos, lista principal invisível
+        atualizarListasVisiveis()
     }
 
     private fun atualizarUfFiltro(regiaoSel: String) {
@@ -256,9 +349,7 @@ class HemocentrosProximosActivity : BaseActivity() {
             R.layout.item_spinner_text,
             listOf("Todos") + ufs
         )
-        adapterUf.setDropDownViewResource(
-            R.layout.item_spinner_dropdown_text
-        )
+        adapterUf.setDropDownViewResource(R.layout.item_spinner_dropdown_text)
         spinnerUfFiltro.adapter = adapterUf
     }
 
@@ -279,45 +370,46 @@ class HemocentrosProximosActivity : BaseActivity() {
             R.layout.item_spinner_text,
             listOf("Todas") + cidades
         )
-        adapterCidade.setDropDownViewResource(
-            R.layout.item_spinner_dropdown_text
-        )
+        adapterCidade.setDropDownViewResource(R.layout.item_spinner_dropdown_text)
         spinnerCidadeFiltro.adapter = adapterCidade
     }
 
-    private fun filtrarLista() {
-        val regiaoSel = spinnerRegiaoFiltro.selectedItem as? String ?: "Todas"
-        val ufSel = spinnerUfFiltro.selectedItem as? String ?: "Todos"
-        val cidadeSel = spinnerCidadeFiltro.selectedItem as? String ?: "Todas"
-
-        val filtrada = listaHemocentros.filter { item ->
-            (regiaoSel == "Todas" || item.regiao == regiaoSel) &&
-                    (ufSel == "Todos" || item.uf == ufSel) &&
-                    (cidadeSel == "Todas" || item.cidade == cidadeSel)
+    // ---------------------------
+    // UI helpers
+    // ---------------------------
+    private fun animarListaPrincipal() {
+        recyclerHemocentros.apply {
+            alpha = 0f
+            animate().alpha(1f).setDuration(180L).start()
         }
-
-        adapter.atualizarLista(filtrada)
     }
 
-    // ---------------------------
-    // SNACKBAR
-    // ---------------------------
     private fun mostrarSnackbar(msg: String, corHex: String) {
         val root = findViewById<View>(android.R.id.content)
-        Snackbar.make(root, msg, Snackbar.LENGTH_LONG)
-            .setBackgroundTint(Color.parseColor(corHex))
-            .setTextColor(ContextCompat.getColor(this, android.R.color.white))
-            .show()
+        val snackbar = Snackbar.make(root, msg, Snackbar.LENGTH_LONG)
+
+        try {
+            val backgroundColor = Color.parseColor(corHex)
+            snackbar.view.setBackgroundColor(backgroundColor)
+        } catch (_: Exception) {
+        }
+
+        snackbar.show()
     }
 }
 
 // ---------------------------
-// ADAPTER DO RECYCLER
+// ADAPTER
 // ---------------------------
 class HemocentroAdapter(
     private val context: Context,
-    private var hemocentros: List<HemocentroListaItem>
+    private var hemocentros: List<HemocentroListaItem>,
+    private val onFavoritoClick: (String) -> Unit
 ) : RecyclerView.Adapter<HemocentroAdapter.HemocentroViewHolder>() {
+
+    init {
+        setHasStableIds(true)
+    }
 
     inner class HemocentroViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val txtNome: TextView = itemView.findViewById(R.id.txtNomeHemocentro)
@@ -327,6 +419,7 @@ class HemocentroAdapter(
         val txtStatus: TextView = itemView.findViewById(R.id.txtStatusHemocentro)
         val btnLigar: Button = itemView.findViewById(R.id.btnLigarHemocentro)
         val btnMapa: Button = itemView.findViewById(R.id.btnMapaHemocentro)
+        val imgFavorito: ImageView = itemView.findViewById(R.id.imgFavoritoHemocentro)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HemocentroViewHolder {
@@ -339,7 +432,6 @@ class HemocentroAdapter(
         val item = hemocentros[position]
 
         holder.txtNome.text = item.nome
-
         holder.txtEndereco.text =
             item.endereco.ifBlank { "Endereço não informado" }
 
@@ -350,12 +442,11 @@ class HemocentroAdapter(
         holder.txtTelefone.text =
             item.telefone?.takeIf { it.isNotBlank() } ?: "Telefone não informado"
 
-        // Badge de STATUS
         val statusRaw = item.status?.trim()?.uppercase()
         val (label, colorHex) = when (statusRaw) {
-            "OK", "ATIVO", "FUNCIONANDO" -> "ATIVO" to "#2E7D32" // verde
-            "INATIVO", "FECHADO" -> "INATIVO" to "#C62828"      // vermelho
-            null, "" -> "NÃO INFORMADO" to "#9E9E9E"           // cinza
+            "OK", "ATIVO", "FUNCIONANDO" -> "ATIVO" to "#2E7D32"
+            "INATIVO", "FECHADO" -> "INATIVO" to "#C62828"
+            null, "" -> "NÃO INFORMADO" to "#9E9E9E"
             else -> statusRaw to "#9E9E9E"
         }
 
@@ -365,17 +456,25 @@ class HemocentroAdapter(
             ColorStateList.valueOf(Color.parseColor(colorHex))
         )
 
-        // Clique no CARD → mostra detalhes
+        val iconRes = if (item.isFavorito) {
+            android.R.drawable.btn_star_big_on
+        } else {
+            android.R.drawable.btn_star_big_off
+        }
+        holder.imgFavorito.setImageResource(iconRes)
+
+        holder.imgFavorito.setOnClickListener {
+            onFavoritoClick(item.id)
+        }
+
         holder.itemView.setOnClickListener {
             mostrarDialogDetalhes(item)
         }
 
-        // Botão Ligar
         holder.btnLigar.setOnClickListener {
             ligarParaHemocentro(item)
         }
 
-        // Botão Ver no mapa
         holder.btnMapa.setOnClickListener {
             abrirNoMapa(item)
         }
@@ -383,13 +482,16 @@ class HemocentroAdapter(
 
     override fun getItemCount(): Int = hemocentros.size
 
+    override fun getItemId(position: Int): Long =
+        hemocentros.getOrNull(position)?.id?.hashCode()?.toLong() ?: RecyclerView.NO_ID
+
     fun atualizarLista(novaLista: List<HemocentroListaItem>) {
         hemocentros = novaLista
         notifyDataSetChanged()
     }
 
     // ---------------------------
-    // Detalhes em diálogo
+    // Detalhes / mapa / ligação
     // ---------------------------
     private fun mostrarDialogDetalhes(item: HemocentroListaItem) {
         val enderecoCompleto = buildString {
@@ -434,9 +536,6 @@ class HemocentroAdapter(
         dialog.show()
     }
 
-    // ---------------------------
-    // Abrir no Google Maps
-    // ---------------------------
     private fun abrirNoMapa(item: HemocentroListaItem) {
         val intent = if (!item.latitude.isNullOrBlank() && !item.longitude.isNullOrBlank()) {
             val uri = Uri.parse("geo:${item.latitude},${item.longitude}?q=${Uri.encode(item.nome)}")
@@ -467,9 +566,6 @@ class HemocentroAdapter(
         }
     }
 
-    // ---------------------------
-    // Ligar para o hemocentro
-    // ---------------------------
     private fun ligarParaHemocentro(item: HemocentroListaItem) {
         val telefoneLimpo = item.telefone
             ?.replace("(", "")
@@ -495,9 +591,6 @@ class HemocentroAdapter(
         }
     }
 
-    // ---------------------------
-    // Estilizar botões do diálogo
-    // ---------------------------
     private fun estilizarBotoesDialog(dialog: AlertDialog) {
         val primary = ContextCompat.getColor(context, R.color.vermelho_primario)
         val white = ContextCompat.getColor(context, android.R.color.white)

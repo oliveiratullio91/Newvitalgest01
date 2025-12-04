@@ -21,7 +21,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.GoogleAuthProvider
 
-class MainActivity : BaseActivity() {   // 🔹 Agora herdando de BaseActivity
+class MainActivity : BaseActivity() {   // 🔹 Herdando de BaseActivity
 
     private lateinit var binding: ActivityMainBinding
     private val auth: FirebaseAuth by lazy { FirebaseAuth.getInstance() }
@@ -43,8 +43,11 @@ class MainActivity : BaseActivity() {   // 🔹 Agora herdando de BaseActivity
         // Esconde a ActionBar para uma tela de login mais clean
         supportActionBar?.hide()
 
-        // SharedPreferences para lembrar login/senha
+        // SharedPreferences para lembrar login/senha + modo offline
         prefs = getSharedPreferences("loginPrefs", MODE_PRIVATE)
+
+        // Sempre que voltar para a tela de login, desligamos o modo offline
+        prefs.edit().putBoolean("offlineMode", false).apply()
 
         // Listeners dos campos para esconder/mostrar os hints dinamicamente
         binding.editLogin.addTextChangedListener {
@@ -57,7 +60,8 @@ class MainActivity : BaseActivity() {   // 🔹 Agora herdando de BaseActivity
 
         setupLoginButton()
         setupCadastroButton()
-        setupGoogleLogin()       // 🔹 Configura botão "Entrar com Google"
+        setupGoogleLogin()        // 🔹 Botão "Entrar com Google"
+        setupModoOfflineButton()  // 🔹 Botão "Entrar em modo offline"
         carregarLoginSalvo()
     }
 
@@ -130,6 +134,9 @@ class MainActivity : BaseActivity() {   // 🔹 Agora herdando de BaseActivity
                     prefs.edit().clear().apply()
                 }
 
+                // Se logou normal, garante que modo offline NÃO está ativo
+                prefs.edit().putBoolean("offlineMode", false).apply()
+
                 navegarParaHome(login)
             }
             .addOnFailureListener { e ->
@@ -196,6 +203,9 @@ class MainActivity : BaseActivity() {   // 🔹 Agora herdando de BaseActivity
                 val usuario = auth.currentUser
                 val nome = usuario?.displayName ?: usuario?.email ?: "Usuário"
 
+                // Login normal = modo online
+                prefs.edit().putBoolean("offlineMode", false).apply()
+
                 mostrarMensagem(binding.root, "Login com Google realizado com sucesso!", "#4CAF50")
                 navegarParaHome(nome)
             }
@@ -210,6 +220,33 @@ class MainActivity : BaseActivity() {   // 🔹 Agora herdando de BaseActivity
         binding.btCadastrar.setOnClickListener {
             val intent = Intent(this, CadastroActivity::class.java)
             startActivity(intent)
+        }
+    }
+
+    // ---------------- MODO OFFLINE ----------------
+
+    private fun setupModoOfflineButton() {
+        binding.btnModoOffline.setOnClickListener {
+            // Marca flag de modo offline
+            prefs.edit().putBoolean("offlineMode", true).apply()
+
+            // Aviso amigável
+            mostrarMensagem(
+                binding.root,
+                "Entrando em modo offline (recursos limitados).",
+                "#4CAF50"
+            )
+
+            // Vai direto para a Home (tela de serviços)
+            val intent = Intent(this, Home::class.java)
+            intent.addFlags(
+                Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                        Intent.FLAG_ACTIVITY_NEW_TASK
+            )
+            startActivity(intent)
+
+            // Se não quiser que o usuário volte para o login ao apertar "voltar", pode usar:
+            // finish()
         }
     }
 
