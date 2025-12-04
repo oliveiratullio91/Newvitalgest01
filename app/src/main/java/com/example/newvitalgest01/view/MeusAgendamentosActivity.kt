@@ -70,9 +70,9 @@ class MeusAgendamentosActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
-        // Recarrega via ViewModel (pode ser local/remoto dependendo da estratégia)
-        viewModel.recarregar(forceRemote = false)
+        viewModel.recarregar(forceRemote = true)
     }
+
 
     // ---------------- RECYCLER / ADAPTER ----------------
 
